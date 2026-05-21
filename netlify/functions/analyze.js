@@ -10,21 +10,9 @@ export async function handler(event){
 
     const prompt = `
 
-You are VoxFix AI Conversation Analyzer.
+Analyze this conversation.
 
-Analyze this conversation deeply.
-
-Detect:
-
-1. Emotional tone
-2. Interest level
-3. Confidence level
-4. Social dynamics
-5. Business seriousness
-6. Manipulation or desperation
-7. Best communication strategy
-
-Return JSON ONLY:
+Return STRICT JSON ONLY:
 
 {
   "mood":"",
@@ -40,15 +28,16 @@ ${text}
 
     const response =
     await fetch(
+
       "https://api.openai.com/v1/chat/completions",
+
       {
 
         method:"POST",
 
         headers:{
 
-          "Content-Type":
-          "application/json",
+          "Content-Type":"application/json",
 
           Authorization:
           `Bearer ${process.env.OPENAI_API_KEY}`
@@ -59,6 +48,10 @@ ${text}
 
           model:"gpt-4o-mini",
 
+          response_format:{
+            type:"json_object"
+          },
+
           messages:[
 
             {
@@ -66,24 +59,22 @@ ${text}
               content:prompt
             }
 
-          ],
-
-          temperature:0.7
+          ]
 
         })
 
       }
+
     );
 
     const data =
     await response.json();
 
-    const raw =
-    data.choices?.[0]?.message?.content ||
-    "{}";
+    const content =
+    data.choices?.[0]?.message?.content;
 
     const parsed =
-    JSON.parse(raw);
+    JSON.parse(content);
 
     return{
 

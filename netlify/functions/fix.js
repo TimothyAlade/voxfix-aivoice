@@ -13,15 +13,16 @@ export async function handler(event){
 
     const response =
     await fetch(
+
       "https://api.openai.com/v1/chat/completions",
+
       {
 
         method:"POST",
 
         headers:{
 
-          "Content-Type":
-          "application/json",
+          "Content-Type":"application/json",
 
           Authorization:
           `Bearer ${process.env.OPENAI_API_KEY}`
@@ -32,11 +33,32 @@ export async function handler(event){
 
           model:"gpt-4o-mini",
 
+          response_format:{
+            type:"json_object"
+          },
+
           messages:[
 
             {
               role:"system",
-              content:instruction
+              content:`
+
+${instruction}
+
+Return STRICT JSON:
+
+{
+  "intent":"",
+  "rewrite":"",
+  "replies":[
+    "",
+    "",
+    "",
+    ""
+  ]
+}
+
+`
             },
 
             {
@@ -44,21 +66,19 @@ export async function handler(event){
               content:text
             }
 
-          ],
-
-          temperature:0.8
+          ]
 
         })
 
       }
+
     );
 
     const data =
     await response.json();
 
     const raw =
-    data.choices?.[0]?.message?.content ||
-    "{}";
+    data.choices?.[0]?.message?.content;
 
     const parsed =
     JSON.parse(raw);
@@ -70,13 +90,13 @@ export async function handler(event){
       body:JSON.stringify({
 
         result:
-        parsed.rewrite || "",
+        parsed.rewrite,
 
         intent:
-        parsed.intent || "",
+        parsed.intent,
 
         replies:
-        parsed.replies || []
+        parsed.replies
 
       })
 
