@@ -1,215 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8"/>
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0"/>
-
-<title>Upgrade To Premium</title>
-
-<link rel="stylesheet" href="style.css"/>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoxFix AI Pricing</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+<div class="pricing-container">
 
-<div class="app-box">
+  <h1>Unlock Elite AI Communication</h1>
+  <p>Upgrade your conversations, business communication, voice transcription, and AI reply generation.</p>
 
-<h1>
-Upgrade To Premium
-</h1>
+  <div class="pricing-grid">
 
-<p class="subtitle">
-Unlock the full power of VoxFix AI
-</p>
+    <!-- Free Plan -->
+    <div class="pricing-card free">
+      <h3>Free</h3>
+      <p>$0 Forever</p>
+      <ul>
+        <li>Basic rewrites</li>
+        <li>Limited usage</li>
+        <li>Standard AI speed</li>
+        <li>Basic conversation analysis</li>
+      </ul>
+      <button disabled class="current-plan">Current Plan</button>
+    </div>
 
-<div class="pricing-card">
+    <!-- Weekly Pro Plan -->
+    <div class="pricing-card weekly">
+      <h3>Weekly Pro</h3>
+      <p>$4.99 / week</p>
+      <ul>
+        <li>Unlimited rewrites</li>
+        <li>Smart AI replies</li>
+        <li>Voice transcription</li>
+        <li>Priority AI speed</li>
+        <li>Premium analysis</li>
+      </ul>
+      <button class="btn-upgrade" onclick="payPlan('weekly')">Upgrade Weekly</button>
+    </div>
 
-<h2>Pro Weekly</h2>
+    <!-- Monthly Elite Plan -->
+    <div class="pricing-card monthly">
+      <h3>Monthly Elite</h3>
+      <p>$14.99 / month</p>
+      <ul>
+        <li>Everything in Weekly</li>
+        <li>Multilingual AI</li>
+        <li>Advanced tone control</li>
+        <li>Business optimization</li>
+        <li>Elite AI engine</li>
+        <li>Faster processing</li>
+      </ul>
+      <button class="btn-upgrade" onclick="payPlan('monthly')">Upgrade Monthly</button>
+    </div>
 
-<div class="price">
-$2.99/week
+    <!-- Lifetime Plan -->
+    <div class="pricing-card lifetime">
+      <h3>Lifetime Access</h3>
+      <p>$79 once</p>
+      <ul>
+        <li>Lifetime premium access</li>
+        <li>Future premium updates</li>
+      </ul>
+      <button class="btn-upgrade" onclick="payPlan('lifetime')">Upgrade Lifetime</button>
+    </div>
+
+  </div>
 </div>
 
-<p>
-
-Unlimited rewrites
-<br><br>
-
-Premium tones
-<br><br>
-
-Advanced AI quality
-<br><br>
-
-Priority processing
-
-</p>
-
-<button
-onclick="payWeekly()"
-class="main-btn">
-
-Start Weekly
-
-</button>
-
-</div>
-
-<div class="pricing-card">
-
-<h2>Pro Monthly</h2>
-
-<div class="price">
-$7.99/month
-</div>
-
-<p>
-
-Everything in Weekly
-<br><br>
-
-Unlimited voice notes
-<br><br>
-
-VIP AI processing
-<br><br>
-
-Best value
-
-</p>
-
-<button
-onclick="payMonthly()"
-class="upgrade-btn">
-
-Start Monthly
-
-</button>
-
-</div>
-
-<div class="pricing-card">
-
-<h2>Lifetime Access</h2>
-
-<div class="price">
-$49 once
-</div>
-
-<p>
-
-Permanent access
-<br><br>
-
-All future updates
-<br><br>
-
-VIP forever
-
-</p>
-
-<button
-onclick="payLifetime()"
-class="main-btn">
-
-Get Lifetime
-
-</button>
-
-</div>
-
-</div>
-
-<script type="module">
-
-import {
-  auth
-}
-from "./firebase.js";
-
-import {
-  onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-let currentUser = null;
-
-onAuthStateChanged(auth,(user)=>{
-
-  if(user){
-
-    currentUser = user;
-
-  }
-
-});
-
-async function startPayment(amount){
-
-  if(!currentUser){
-
-    alert("Loading user...");
-    return;
-
-  }
-
-  const response =
-  await fetch(
-    "/.netlify/functions/pay",
-    {
-      method:"POST",
-
-      headers:{
-        "Content-Type":
-        "application/json"
-      },
-
-      body:JSON.stringify({
-
-        email:
-        `${currentUser.uid}@voxfix.ai`,
-
-        amount,
-
-        callback_url:
-        `${window.location.origin}/.netlify/functions/verify`,
-
-        uid:
-        currentUser.uid
-
-      })
-
-    }
-  );
-
-  const data =
-  await response.json();
-
-  if(data.data.authorization_url){
-
-    window.location.href =
-    data.data.authorization_url;
-
-  }else{
-
-    alert("Payment failed.");
-
-  }
-
-}
-
-window.payWeekly =
-()=>startPayment(299);
-
-window.payMonthly =
-()=>startPayment(799);
-
-window.payLifetime =
-()=>startPayment(4900);
-
-</script>
+<script type="module" src="pricing.js"></script>
 </body>
 </html>

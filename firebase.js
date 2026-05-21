@@ -3,19 +3,14 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 
-  getAuth,
-  signInAnonymously,
-  onAuthStateChanged
+  getAuth
 
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
 
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc
+  getFirestore
 
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -45,80 +40,8 @@ const firebaseConfig = {
 const app =
 initializeApp(firebaseConfig);
 
-const auth =
+export const auth =
 getAuth(app);
 
-const db =
+export const db =
 getFirestore(app);
-
-async function createUser(user){
-
-  const userRef =
-  doc(db,"users",user.uid);
-
-  const snap =
-  await getDoc(userRef);
-
-  if(!snap.exists()){
-
-    await setDoc(userRef,{
-
-      uid:user.uid,
-
-      premium:false,
-
-      freeUses:3,
-
-      lastReset:
-      Date.now(),
-
-      createdAt:
-      Date.now(),
-
-      history:[]
-
-    });
-
-  }
-
-}
-
-signInAnonymously(auth)
-.then(()=>{
-
-  console.log(
-    "Anonymous login success"
-  );
-
-})
-.catch((error)=>{
-
-  console.log(
-    "Anonymous auth error:",
-    error
-  );
-
-});
-
-onAuthStateChanged(
-  auth,
-  async(user)=>{
-
-    if(user){
-
-      console.log(
-        "User authenticated:",
-        user.uid
-      );
-
-      await createUser(user);
-
-    }
-
-  }
-);
-
-export {
-  auth,
-  db
-};
