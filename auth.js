@@ -1,99 +1,535 @@
-import { auth } from "./firebase.js";
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  auth,
+  db
+}
+from "./firebase.js";
+
+import {
+
   GoogleAuthProvider,
+
   signInWithPopup,
-  signInAnonymously,
+
+  createUserWithEmailAndPassword,
+
+  signInWithEmailAndPassword,
+
+  updateProfile,
+
   sendEmailVerification,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const firstNameInput = document.getElementById("firstName");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const verificationInput = document.getElementById("verificationCode");
+  signInAnonymously,
 
-// Google provider
-const provider = new GoogleAuthProvider();
+  onAuthStateChanged,
 
-// SIGN UP
-window.signUp = async function() {
-  const firstName = firstNameInput.value.trim();
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
+  signOut
 
-  if (!firstName || !email || !password) {
-    alert("Please fill in all required fields");
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+
+  doc,
+
+  setDoc,
+
+  getDoc,
+
+  updateDoc
+
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ====================================
+   INPUTS
+==================================== */
+
+const nameInput =
+  document.getElementById(
+    "nameInput"
+  );
+
+const emailInput =
+  document.getElementById(
+    "emailInput"
+  );
+
+const passwordInput =
+  document.getElementById(
+    "passwordInput"
+  );
+
+/* ====================================
+   GOOGLE PROVIDER
+==================================== */
+
+const provider =
+  new GoogleAuthProvider();
+
+/* ====================================
+   CREATE USER DOCUMENT
+==================================== */
+
+async function createUserDocument(
+  user,
+  name
+){
+
+  const userRef =
+    doc(
+      db,
+      "users",
+      user.uid
+    );
+
+  const userSnap =
+    await getDoc(userRef);
+
+  if(!userSnap.exists()){
+
+    await setDoc(
+
+      userRef,
+
+      {
+
+        uid:
+          user.uid,
+
+        name:
+          name ||
+
+          user.displayName ||
+
+          "User",
+
+        email:
+          user.email ||
+
+          "guest@voxfix.ai",
+
+        premium:
+          false,
+
+        plan:
+          "free",
+
+        requests:
+          0,
+
+        createdAt:
+          Date.now()
+
+      }
+
+    );
+
+  }
+
+}
+
+/* ====================================
+   SIGNUP
+==================================== */
+
+window.signup = async()=>{
+
+  const name =
+    nameInput.value.trim();
+
+  const email =
+    emailInput.value.trim();
+
+  const password =
+    passwordInput.value.trim();
+
+  if(
+    !name ||
+    !email ||
+    !password
+  ){
+
+    alert(
+      "Please fill all fields."
+    );
+
     return;
+
   }
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+  try{
 
-    // Update displayName with first name
-    await updateProfile(user, { displayName: firstName });
+    const result =
+      await createUserWithEmailAndPassword(
 
-    // Send email verification
-    await sendEmailVerification(user);
+        auth,
+        email,
+        password
 
-    alert("Account created! Please check your email for verification code.");
+      );
 
-    // Redirect to home
-    setTimeout(() => { window.location.href = "index.html"; }, 1000);
-  } catch (error) {
-    alert("Sign Up Error: " + error.message);
+    await updateProfile(
+
+      result.user,
+
+      {
+        displayName:name
+      }
+
+    );
+
+    await sendEmailVerification(
+      result.user
+    );
+
+    await createUserDocument(
+
+      result.user,
+      name
+
+    );
+
+    localStorage.setItem(
+
+      "voxfixName",
+
+      name
+
+    );
+
+    localStorage.setItem(
+
+      "voxfixPremium",
+
+      "false"
+
+    );
+
+    alert(
+      "Account created successfully."
+    );
+
+    window.location.href =
+      "index.html";
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(error.message);
+
   }
+
 };
 
-// LOGIN
-window.login = async function() {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
+/* ====================================
+   LOGIN
+==================================== */
 
-  if (!email || !password) {
-    alert("Please enter email and password");
+window.login = async()=>{
+
+  const email =
+    emailInput.value.trim();
+
+  const password =
+    passwordInput.value.trim();
+
+  if(
+    !email ||
+    !password
+  ){
+
+    alert(
+      "Enter email and password."
+    );
+
     return;
+
   }
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+  try{
 
-    if (!user.emailVerified) {
-      alert("Please verify your email first");
-      return;
+    const result =
+      await signInWithEmailAndPassword(
+
+        auth,
+        email,
+        password
+
+      );
+
+    const userRef =
+      doc(
+        db,
+        "users",
+        result.user.uid
+      );
+
+    const userSnap =
+      await getDoc(userRef);
+
+    let premium = false;
+
+    if(userSnap.exists()){
+
+      const userData =
+        userSnap.data();
+
+      premium =
+        userData.premium;
+
+      localStorage.setItem(
+
+        "voxfixPlan",
+
+        userData.plan || "free"
+
+      );
+
     }
 
-    alert("Login successful! Redirecting...");
+    localStorage.setItem(
 
-    setTimeout(() => { window.location.href = "index.html"; }, 500);
-  } catch (error) {
-    alert("Login Error: " + error.message);
+      "voxfixPremium",
+
+      premium
+
+    );
+
+    localStorage.setItem(
+
+      "voxfixName",
+
+      result.user.displayName ||
+
+      "User"
+
+    );
+
+    alert(
+      "Login successful."
+    );
+
+    window.location.href =
+      "index.html";
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(error.message);
+
   }
+
 };
 
-// GOOGLE SIGN-IN
-window.googleSignIn = async function() {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    alert(`Welcome ${user.displayName || "User"}!`);
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Google Sign-In Error: " + error.message);
+/* ====================================
+   GOOGLE LOGIN
+==================================== */
+
+window.googleLogin = async()=>{
+
+  try{
+
+    const result =
+      await signInWithPopup(
+
+        auth,
+        provider
+
+      );
+
+    await createUserDocument(
+
+      result.user,
+      result.user.displayName
+
+    );
+
+    const userRef =
+      doc(
+        db,
+        "users",
+        result.user.uid
+      );
+
+    const userSnap =
+      await getDoc(userRef);
+
+    let premium = false;
+
+    if(userSnap.exists()){
+
+      premium =
+        userSnap.data().premium;
+
+    }
+
+    localStorage.setItem(
+
+      "voxfixPremium",
+
+      premium
+
+    );
+
+    localStorage.setItem(
+
+      "voxfixName",
+
+      result.user.displayName
+
+    );
+
+    alert(
+      "Google login successful."
+    );
+
+    window.location.href =
+      "index.html";
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(error.message);
+
   }
+
 };
 
-// ANONYMOUS LOGIN
-window.anonymousSignIn = async function() {
-  try {
-    const userCredential = await signInAnonymously(auth);
-    const user = userCredential.user;
-    alert("Logged in as guest");
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Anonymous Sign-In Error: " + error.message);
+/* ====================================
+   GUEST LOGIN
+==================================== */
+
+window.guestLogin = async()=>{
+
+  try{
+
+    const result =
+      await signInAnonymously(
+        auth
+      );
+
+    await createUserDocument(
+
+      result.user,
+      "Guest"
+
+    );
+
+    localStorage.setItem(
+
+      "voxfixName",
+
+      "Guest"
+
+    );
+
+    localStorage.setItem(
+
+      "voxfixPremium",
+
+      "false"
+
+    );
+
+    window.location.href =
+      "index.html";
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(error.message);
+
   }
+
+};
+
+/* ====================================
+   AUTH SESSION
+==================================== */
+
+onAuthStateChanged(
+
+  auth,
+
+  async(user)=>{
+
+    if(user){
+
+      console.log(
+        "Logged in:",
+        user.uid
+      );
+
+      const userRef =
+        doc(
+          db,
+          "users",
+          user.uid
+        );
+
+      const userSnap =
+        await getDoc(userRef);
+
+      if(userSnap.exists()){
+
+        const userData =
+          userSnap.data();
+
+        localStorage.setItem(
+
+          "voxfixPremium",
+
+          userData.premium
+
+        );
+
+        localStorage.setItem(
+
+          "voxfixPlan",
+
+          userData.plan
+
+        );
+
+      }
+
+    }else{
+
+      console.log(
+        "No active session"
+      );
+
+    }
+
+  }
+
+);
+
+/* ====================================
+   LOGOUT
+==================================== */
+
+window.logout = async()=>{
+
+  try{
+
+    await signOut(auth);
+
+    localStorage.clear();
+
+    window.location.href =
+      "auth.html";
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(error.message);
+
+  }
+
 };

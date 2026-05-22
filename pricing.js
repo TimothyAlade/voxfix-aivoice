@@ -1,63 +1,138 @@
-import { auth } from "./firebase.js";
+/* ====================================
+   FLUTTERWAVE KEYS
+==================================== */
 
-// Flutterwave public key
-const FLW_PUBLIC_KEY = import.meta.env.VITE_FLW_PUBLIC_KEY || "FLWPUBK_TEST-244e80dcb198108381cc5d9320da4fc9-X";
+/* TEST */
 
-// Amounts in USD cents
-const PLAN_AMOUNT = {
-  weekly: 4.99,
-  monthly: 14.99,
-  lifetime: 79
+const TEST_PUBLIC_KEY =
+  "FLWPUBK_TEST-XXXXXXXXXXXX-X";
+
+/* LIVE */
+
+const LIVE_PUBLIC_KEY =
+  "FLWPUBK-XXXXXXXXXXXX-X";
+
+/* SWITCH */
+
+const USE_LIVE_MODE =
+  false;
+
+/* ACTIVE */
+
+const FLW_PUBLIC_KEY =
+
+  USE_LIVE_MODE
+
+  ? LIVE_PUBLIC_KEY
+
+  : TEST_PUBLIC_KEY;
+
+/* ====================================
+   PRICING
+==================================== */
+
+const plans = {
+
+  weekly:4.99,
+
+  monthly:14.99,
+
+  lifetime:79
+
 };
 
-// User must be logged in
-async function getCurrentUser() {
-  return new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      unsubscribe();
-      if (user) resolve(user);
-      else reject("User not logged in");
-    });
-  });
-}
+/* ====================================
+   PAY
+==================================== */
 
-window.payPlan = async function(plan) {
-  let user;
-  try {
-    user = await getCurrentUser();
-  } catch (err) {
-    alert("Please log in first to upgrade.");
-    return;
-  }
+window.payNow = function(plan){
 
-  const amount = PLAN_AMOUNT[plan];
+  const amount =
+    plans[plan];
 
-  const x = FlutterwaveCheckout({
-    public_key: FLW_PUBLIC_KEY,
-    tx_ref: `VoxFixAI_${plan}_${Date.now()}`,
-    amount: amount,
-    currency: "USD",
-    payment_options: "card, mobilemoney, ussd",
-    customer: {
-      email: user.email,
-      name: user.displayName || "VoxFix User"
+  const name =
+    localStorage.getItem(
+      "voxfixName"
+    ) || "User";
+
+  FlutterwaveCheckout({
+
+    public_key:
+      FLW_PUBLIC_KEY,
+
+    tx_ref:
+      "VOXFIX_" +
+      Date.now(),
+
+    amount:
+      amount,
+
+    currency:
+      "USD",
+
+    payment_options:
+      "card,ussd,banktransfer,mobilemoney",
+
+    customer:{
+
+      email:
+        "customer@example.com",
+
+      name:
+        name
+
     },
-    callback: async function(data) {
-      alert("Payment successful! Updating account...");
-      // Update Firestore user document to mark premium
-      const uid = user.uid;
-      const db = firebase.firestore();
-      const userRef = db.collection("users").doc(uid);
-      await userRef.set({ isPremium: true, plan }, { merge: true });
-      window.location.reload();
+
+    customizations:{
+
+      title:
+        "VoxFix AI Premium",
+
+      description:
+        `${plan} premium plan`,
+
+      logo:
+        "https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
+
     },
-    onclose: function() {
-      console.log("Payment closed");
+
+    callback:function(response){
+
+      console.log(response);
+
+      localStorage.setItem(
+
+        "voxfixPremium",
+
+        "true"
+
+      );
+
+      localStorage.setItem(
+
+        "voxfixPlan",
+
+        plan
+
+      );
+
+      alert(
+        "Payment successful."
+      );
+
+      window.location.href =
+        "index.html";
+
     },
-    customizations: {
-      title: "VoxFix AI Premium",
-      description: `${plan} subscription`,
-      logo: "https://your-logo-link.com/logo.png"
+
+    onclose:function(){
+
+      console.log(
+        "Payment closed"
+      );
+
     }
+
   });
+
 };

@@ -1,136 +1,153 @@
 import {
-  auth,
-  db
+  db,
+  auth
 }
 from "./firebase.js";
 
 import {
 
   collection,
+
   addDoc,
-  getDocs,
+
   query,
+
   where,
-  orderBy
+
+  orderBy,
+
+  getDocs,
+
+  serverTimestamp
 
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
+/* ====================================
+   SAVE HISTORY
+==================================== */
 
-  onAuthStateChanged
+export async function saveHistory(
 
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  input,
+  output,
+  tone
 
-const historyList =
-document.getElementById(
-  "historyList"
-);
-
-window.goHome = function(){
-
-  window.location.href =
-  "index.html";
-
-}
-
-onAuthStateChanged(auth,
-async(user)=>{
-
-  if(!user){
-
-    window.location.href =
-    "auth.html";
-
-    return;
-
-  }
+){
 
   try{
 
-    const q = query(
+    const user =
+      auth.currentUser;
 
-      collection(db,"history"),
-
-      where(
-        "userId",
-        "==",
-        user.uid
-      ),
-
-      orderBy(
-        "createdAt",
-        "desc"
-      )
-
-    );
-
-    const snapshot =
-    await getDocs(q);
-
-    if(snapshot.empty){
-
-      historyList.innerHTML = `
-
-        <div class="empty-history">
-
-          No saved history yet.
-
-        </div>
-
-      `;
+    if(!user){
 
       return;
 
     }
 
-    historyList.innerHTML = "";
+    await addDoc(
 
-    snapshot.forEach((doc)=>{
+      collection(
+        db,
+        "history"
+      ),
 
-      const data = doc.data();
+      {
 
-      historyList.innerHTML += `
+        uid:
+          user.uid,
 
-        <div class="history-card">
+        input,
 
-          <div class="history-type">
+        output,
 
-            ${data.type}
+        tone,
 
-          </div>
+        premium:
+          localStorage.getItem(
+            "voxfixPremium"
+          ) === "true",
 
-          <div class="history-message">
+        createdAt:
+          serverTimestamp()
 
-            ${data.message}
+      }
 
-          </div>
-
-          <div class="history-result">
-
-            ${data.result}
-
-          </div>
-
-        </div>
-
-      `;
-
-    });
+    );
 
   }catch(error){
 
-    historyList.innerHTML = `
-
-      <div class="empty-history">
-
-        Failed to load history.
-
-      </div>
-
-    `;
+    console.error(error);
 
   }
 
-});
+}
+
+/* ====================================
+   LOAD HISTORY
+==================================== */
+
+export async function loadHistory(){
+
+  try{
+
+    const user =
+      auth.currentUser;
+
+    if(!user){
+
+      return [];
+
+    }
+
+    const q =
+      query(
+
+        collection(
+          db,
+          "history"
+        ),
+
+        where(
+          "uid",
+          "==",
+          user.uid
+        ),
+
+        orderBy(
+          "createdAt",
+          "desc"
+        )
+
+      );
+
+    const snapshot =
+      await getDocs(q);
+
+    const history = [];
+
+    snapshot.forEach((doc)=>{
+
+      history.push({
+
+        id:
+          doc.id,
+
+        ...doc.data()
+
+      });
+
+    });
+
+    return history;
+
+  }catch(error){
+
+    console.error(error);
+
+    return [];
+
+  }
+
+}
