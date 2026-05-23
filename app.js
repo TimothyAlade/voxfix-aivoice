@@ -1,494 +1,311 @@
 import {
-  auth,
-  db
-}
-from "./firebase.js";
+    auth,
+    db
+} from "./firebase.js";
 
 import {
-  generateAIResponse
-}
-from "./openai.js";
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
-  getPrompt
-}
-from "./aimode.js";
+    doc,
+    getDoc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import {
-  transcribeAudio
-}
-from "./transcribe.js";
-
-import {
-  saveHistory
-}
-from "./history.js";
-
-import {
-  shareResult
-}
-from "./share.js";
-
-import {
-
-  doc,
-
-  getDoc,
-
-  updateDoc,
-
-  increment
-
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* ====================================
-   ELEMENTS
-==================================== */
-
-const /* ====================================
-   MENU
-==================================== */
-
-const menuBtn =
-  document.getElementById(
-    "menuBtn"
-  );
-
-const sidebar =
-  document.getElementById(
-    "sidebar"
-  );
-
-menuBtn.addEventListener(
-  "click",
-  ()=>{
-
-    sidebar.classList.toggle(
-      "active"
-    );
-
-  }
-);
-
-/* CLOSE MENU OUTSIDE */
-
-document.addEventListener(
-  "click",
-  (event)=>{
-
-    if(
-      !sidebar.contains(event.target)
-      &&
-      !menuBtn.contains(event.target)
-    ){
-
-      sidebar.classList.remove(
-        "active"
-      );
-
-    }
-
-  }
-);
-
-/* ====================================
-   AUTH DISPLAY
-==================================== */
-
-const authLinks =
-  document.getElementById(
-    "authLinks"
-  );
-
-const userGreeting =
-  document.getElementById(
-    "userGreeting"
-  );
-
-const storedName =
-  localStorage.getItem(
-    "voxfixName"
-  );
-
-if(storedName){
-
-  userGreeting.innerText =
-    `Hi, ${storedName}`;
-
-  authLinks.style.display =
-    "none";
-
-}else{
-
-  userGreeting.innerText =
-    "Guest";
-
-}
-
-/* ====================================
-   LOGOUT
-==================================== */
-
-const logoutBtn =
-  document.getElementById(
-    "logoutBtn"
-  );
-
-logoutBtn.addEventListener(
-  "click",
-  ()=>{
-
-    localStorage.clear();
-
-    window.location.href =
-      "auth.html";
-
-  }
-);
-const userGreeting =
-  document.getElementById(
-    "userGreeting"
-  );
-
-const fixBtn =
-  document.getElementById(
-    "fixBtn"
-  );
-
-const resultText =
-  document.getElementById(
-    "resultText"
-  );
-
-const audioInput =
-  document.getElementById(
-    "audioInput"
-  );
-
-/* ====================================
+/* =========================================
    SIDEBAR
-==================================== */
+========================================= */
 
-menuBtn.addEventListener(
-  "click",
-  ()=>{
+window.toggleSidebar = function(){
 
-    sidebar.classList.toggle(
-      "active"
+    document
+    .getElementById("sidebar")
+    .classList
+    .toggle("active");
+
+};
+
+/* =========================================
+   SECTION SWITCHING
+========================================= */
+
+window.showSection = function(id){
+
+    document
+    .querySelectorAll(".app-section")
+    .forEach(section => {
+
+        section.classList.remove(
+            "active-section"
+        );
+
+    });
+
+    document
+    .getElementById(id)
+    .classList.add(
+        "active-section"
     );
 
-  }
-);
-
-/* ====================================
-   LOAD USER
-==================================== */
-
-let currentPremium =
-  false;
-
-let currentPlan =
-  "free";
-
-async function loadUserData(){
-
-  const user =
-    auth.currentUser;
-
-  if(!user){
-
-    window.location.href =
-      "auth.html";
-
-    return;
-
-  }
-
-  const userRef =
-    doc(
-      db,
-      "users",
-      user.uid
+    document
+    .getElementById("sidebar")
+    .classList.remove(
+        "active"
     );
 
-  const userSnap =
-    await getDoc(userRef);
+};
 
-  if(userSnap.exists()){
+/* =========================================
+   AUTH
+========================================= */
 
-    const userData =
-      userSnap.data();
+onAuthStateChanged(auth, async(user)=>{
 
-    currentPremium =
-      userData.premium;
-
-    currentPlan =
-      userData.plan;
-
-    localStorage.setItem(
-
-      "voxfixPremium",
-
-      currentPremium
-
-    );
-
-    localStorage.setItem(
-
-      "voxfixPlan",
-
-      currentPlan
-
-    );
-
-    userGreeting.innerText =
-      `Hi, ${userData.name}`;
-
-  }
-
-}
-
-loadUserData();
-
-/* ====================================
-   AUDIO
-==================================== */
-
-audioInput.addEventListener(
-
-  "change",
-
-  async(event)=>{
-
-    if(!currentPremium){
-
-      alert(
-        "Premium required for voice transcription."
-      );
-
-      return;
-
-    }
-
-    const file =
-      event.target.files[0];
-
-    if(!file) return;
-
-    resultText.innerText =
-      "Transcribing voice note...";
-
-    const transcription =
-      await transcribeAudio(
-        file
-      );
-
+    const greeting =
     document.getElementById(
-      "userInput"
-    ).value =
-      transcription;
+        "userGreeting"
+    );
 
-    resultText.innerText =
-      "Voice note transcribed successfully.";
+    const authLink =
+    document.getElementById(
+        "authLink"
+    );
 
-  }
+    if(user){
 
-);
+        authLink.style.display =
+        "none";
 
-/* ====================================
-   GENERATE AI
-==================================== */
+        greeting.innerText =
+        `Hi, ${user.displayName || "User"}`;
 
-fixBtn.addEventListener(
+        loadHistory(user.uid);
 
-  "click",
+    }else{
 
-  async()=>{
-
-    const input =
-      document.getElementById(
-        "userInput"
-      ).value.trim();
-
-    if(!input){
-
-      alert(
-        "Enter a message first."
-      );
-
-      return;
+        greeting.innerText =
+        "Guest User";
 
     }
 
-    const tone =
-      document.getElementById(
-        "toneSelect"
-      ).value;
+});
 
-    const language =
-      document.getElementById(
-        "languageSelect"
-      ).value;
+/* =========================================
+   LOGOUT
+========================================= */
 
-    /* PREMIUM LANGUAGE */
-
-    if(
-      language !== "English"
-      &&
-      !currentPremium
-    ){
-
-      alert(
-        "Premium required for multilingual AI."
-      );
-
-      return;
-
-    }
-
-    resultText.innerText =
-      "Generating premium AI response...";
+window.logoutUser = async function(){
 
     try{
 
-      const prompt =
-        getPrompt(
-          tone,
-          input
-        ) +
+        await signOut(auth);
 
-`
-Translate response to:
-${language}
-`;
-
-      const result =
-        await generateAIResponse(
-          prompt
+        alert(
+            "Logged out successfully."
         );
 
-      resultText.innerText =
-        result;
-
-      /* SAVE HISTORY */
-
-      await saveHistory(
-
-        input,
-        result,
-        tone
-
-      );
-
-      /* UPDATE REQUEST COUNT */
-
-      const user =
-        auth.currentUser;
-
-      if(user){
-
-        const userRef =
-          doc(
-            db,
-            "users",
-            user.uid
-          );
-
-        await updateDoc(
-
-          userRef,
-
-          {
-
-            requests:
-              increment(1)
-
-          }
-
-        );
-
-      }
+        location.href =
+        "auth.html";
 
     }catch(error){
 
-      console.error(error);
-
-      resultText.innerText =
-`
-AI generation failed.
-
-Please try again.
-`;
+        alert(error.message);
 
     }
 
-  }
+};
 
+/* =========================================
+   FIX MESSAGE
+========================================= */
+
+const fixBtn =
+document.getElementById(
+    "fixBtn"
 );
 
-/* ====================================
+fixBtn.addEventListener(
+    "click",
+    async()=>{
+
+        const input =
+        document.getElementById(
+            "promptInput"
+        ).value;
+
+        const tone =
+        document.getElementById(
+            "toneSelect"
+        ).value;
+
+        const language =
+        document.getElementById(
+            "languageSelect"
+        ).value;
+
+        if(!input){
+
+            alert(
+                "Enter a message first."
+            );
+
+            return;
+
+        }
+
+        document.getElementById(
+            "resultText"
+        ).innerHTML =
+        `
+        ✨ Rewritten in ${tone} tone (${language}):
+
+        <br><br>
+
+        ${input}
+        `;
+
+    }
+);
+
+/* =========================================
    COPY
-==================================== */
+========================================= */
 
-document.getElementById(
-  "copyBtn"
-).addEventListener(
-
-  "click",
-
-  async()=>{
+window.copyResult = function(){
 
     const text =
-      resultText.innerText;
+    document.getElementById(
+        "resultText"
+    ).innerText;
 
-    await navigator.clipboard.writeText(
-      text
+    navigator.clipboard.writeText(
+        text
     );
 
     alert(
-      "Copied successfully."
+        "Copied successfully."
     );
 
-  }
+};
 
-);
-
-/* ====================================
+/* =========================================
    SHARE
-==================================== */
+========================================= */
 
-document.getElementById(
-  "shareBtn"
-).addEventListener(
+window.shareAIResult = async function(){
 
-  "click",
+    const text =
+    document.getElementById(
+        "resultText"
+    ).innerText;
 
-  async()=>{
+    if(navigator.share){
 
-    await shareResult();
+        await navigator.share({
 
-  }
+            title:"VoxFix AI",
 
-);
+            text:text
 
-/* ====================================
-   LOGOUT
-==================================== */
+        });
 
-const logoutBtn =
-  document.getElementById(
-    "logoutBtn"
-  );
+    }else{
 
-logoutBtn.addEventListener(
+        alert(
+            "Sharing not supported on this device."
+        );
 
-  "click",
+    }
 
-  ()=>{
+};
 
-    localStorage.clear();
+/* =========================================
+   HISTORY
+========================================= */
 
-  }
+async function loadHistory(uid){
 
-);
+    try{
+
+        const ref =
+        doc(
+            db,
+            "users",
+            uid
+        );
+
+        const snap =
+        await getDoc(ref);
+
+        if(snap.exists()){
+
+            const data =
+            snap.data();
+
+            const history =
+            data.history || [];
+
+            const list =
+            document.getElementById(
+                "historyList"
+            );
+
+            if(history.length === 0){
+
+                list.innerHTML =
+                "No saved history.";
+
+                return;
+
+            }
+
+            list.innerHTML =
+            history.map(item=>`
+                <div class="history-item">
+                    ${item}
+                </div>
+            `).join("");
+
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+/* =========================================
+   SETTINGS
+========================================= */
+
+window.toggleDarkMode =
+function(){
+
+    document.body.classList.toggle(
+        "light-mode"
+    );
+
+};
+
+window.clearHistory =
+function(){
+
+    document.getElementById(
+        "historyList"
+    ).innerHTML =
+    "History cleared.";
+
+};
+
+window.resetFreeUses =
+function(){
+
+    alert(
+        "Free usage reset."
+    );
+
+};

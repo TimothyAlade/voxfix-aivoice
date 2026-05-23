@@ -11,7 +11,7 @@ content="width=device-width, initial-scale=1.0"
 />
 
 <title>
-VoxFix Authentication
+VoxFix AI Authentication
 </title>
 
 <link
@@ -28,90 +28,160 @@ rel="stylesheet"
 
 <body>
 
-<div class="auth-container">
+<div class="auth-page">
 
-  <div class="auth-glow glow-left"></div>
-  <div class="auth-glow glow-right"></div>
+<!-- LEFT -->
 
-  <div class="auth-card">
+<div class="auth-left">
 
-    <div class="auth-logo">
+<div class="auth-brand">
 
-      <div class="logo-box">
-        V
-      </div>
+<div class="auth-logo">
+V
+</div>
 
-      <h1>
-        VoxFix AI
-      </h1>
+<h1>
+VoxFix AI
+</h1>
 
-    </div>
+</div>
 
-    <div class="auth-header">
+<h2>
 
-      <h2>
-        Welcome Back
-      </h2>
+Rewrite Messages
+Like A Premium Human
 
-      <p>
-        Login or create your premium AI account
-      </p>
+</h2>
 
-    </div>
+<p>
 
-    <!-- FORM -->
+Join thousands using AI rewriting,
+voice intelligence,
+multilingual communication
+and elite emotional intelligence messaging.
 
-    <div class="auth-form">
+</p>
 
-      <input
-        type="text"
-        id="nameInput"
-        placeholder="First Name"
-      />
+<div class="auth-features">
 
-      <input
-        type="email"
-        id="emailInput"
-        placeholder="Email Address"
-      />
+<div class="auth-feature">
+🌍 100+ AI Languages
+</div>
 
-      <input
-        type="password"
-        id="passwordInput"
-        placeholder="Password"
-      />
+<div class="auth-feature">
+🎤 Voice Transcription
+</div>
 
-      <button
-        onclick="signup()"
-        class="auth-btn primary-btn"
-      >
-        Create Account
-      </button>
+<div class="auth-feature">
+🧠 Emotional Intelligence AI
+</div>
 
-      <button
-        onclick="login()"
-        class="auth-btn secondary-btn"
-      >
-        Login
-      </button>
+<div class="auth-feature">
+⚡ Priority Premium Speed
+</div>
 
-      <button
-        onclick="googleLogin()"
-        class="google-btn"
-      >
-        Continue With Google
-      </button>
+</div>
 
-      <button
-        onclick="guestLogin()"
-        class="guest-btn"
-      >
-        Continue As Guest
-      </button>
+</div>
 
-    </div>
+<!-- RIGHT -->
 
-  </div>
+<div class="auth-right">
+
+<div class="auth-card">
+
+<div class="auth-top">
+
+<h2 id="authTitle">
+
+Welcome Back
+
+</h2>
+
+<p id="authSub">
+
+Login to continue using VoxFix AI
+
+</p>
+
+</div>
+
+<form id="authForm">
+
+<input
+type="text"
+id="nameInput"
+placeholder="First Name"
+style="display:none"
+/>
+
+<input
+type="email"
+id="emailInput"
+placeholder="Email Address"
+required
+/>
+
+<input
+type="password"
+id="passwordInput"
+placeholder="Password"
+required
+/>
+
+<button
+type="submit"
+class="auth-submit"
+id="authBtn"
+>
+
+Login
+
+</button>
+
+</form>
+
+<button
+class="google-btn"
+id="googleBtn"
+>
+
+<img
+src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
+/>
+
+Continue With Google
+
+</button>
+
+<div class="auth-switch">
+
+<span id="switchText">
+
+Don't have an account?
+
+</span>
+
+<button id="switchMode">
+
+Create Account
+
+</button>
+
+</div>
+
+<a
+href="index.html"
+class="back-home-auth"
+>
+
+← Back Home
+
+</a>
+
+</div>
+
+</div>
 
 </div>
 
@@ -121,5 +191,4 @@ src="auth.js"
 ></script>
 
 </body>
-
 </html>

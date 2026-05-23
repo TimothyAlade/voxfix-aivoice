@@ -1,85 +1,123 @@
+import {
+  auth,
+  db
+}
+from "./firebase.js";
+
+import {
+  doc,
+  getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 /* ====================================
    FLUTTERWAVE KEYS
 ==================================== */
 
-/* TEST */
+const TEST_KEY =
+"FLWPUBK_TEST-244e80dcb198108381cc5d9320da4fc9-X";
 
-const TEST_PUBLIC_KEY =
-  "FLWPUBK_TEST-XXXXXXXXXXXX-X";
-
-/* LIVE */
-
-const LIVE_PUBLIC_KEY =
-  "FLWPUBK-XXXXXXXXXXXX-X";
-
-/* SWITCH */
-
-const USE_LIVE_MODE =
-  false;
-
-/* ACTIVE */
-
-const FLW_PUBLIC_KEY =
-
-  USE_LIVE_MODE
-
-  ? LIVE_PUBLIC_KEY
-
-  : TEST_PUBLIC_KEY;
+const LIVE_KEY =
+"pk_live_9aa6ef8ab901b849ee1723345ff12bbef8162359";
 
 /* ====================================
-   PRICING
+   SELECT KEY
 ==================================== */
 
-const plans = {
-
-  weekly:4.99,
-
-  monthly:14.99,
-
-  lifetime:79
-
-};
+const FLW_KEY =
+location.hostname === "localhost"
+? TEST_KEY
+: LIVE_KEY;
 
 /* ====================================
-   PAY
+   USER DATA
 ==================================== */
 
-window.payNow = function(plan){
+async function getUserData(){
 
-  const amount =
-    plans[plan];
+  const user =
+    auth.currentUser;
 
-  const name =
-    localStorage.getItem(
-      "voxfixName"
-    ) || "User";
+  if(!user){
+
+    alert(
+      "Please login first."
+    );
+
+    location.href =
+      "auth.html";
+
+    return null;
+
+  }
+
+  const ref =
+    doc(
+      db,
+      "users",
+      user.uid
+    );
+
+  const snapshot =
+    await getDoc(ref);
+
+  return {
+
+    uid:
+      user.uid,
+
+    email:
+      user.email,
+
+    ...snapshot.data()
+
+  };
+
+}
+
+/* ====================================
+   PAYMENT
+==================================== */
+
+async function payNow(
+
+  plan,
+  amount
+
+){
+
+  const user =
+    await getUserData();
+
+  if(!user){
+
+    return;
+
+  }
 
   FlutterwaveCheckout({
 
     public_key:
-      FLW_PUBLIC_KEY,
+      FLW_KEY,
 
     tx_ref:
-      "VOXFIX_" +
-      Date.now(),
+`VOXFIX-${Date.now()}`,
 
-    amount:
-      amount,
+    amount,
 
-    currency:
-      "USD",
+    currency:"USD",
 
     payment_options:
-      "card,ussd,banktransfer,mobilemoney",
+      "card,banktransfer,ussd",
 
     customer:{
 
       email:
-        "customer@example.com",
+        user.email,
 
       name:
-        name
+        user.name ||
+        "VoxFix User"
 
     },
 
@@ -89,39 +127,24 @@ window.payNow = function(plan){
         "VoxFix AI Premium",
 
       description:
-        `${plan} premium plan`,
+        `${plan} subscription`,
 
       logo:
-        "https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
+"https://voxfixai.vercel.app/logo.png"
 
     },
 
-    callback:function(response){
+    callback:function(data){
 
-      console.log(response);
-
-      localStorage.setItem(
-
-        "voxfixPremium",
-
-        "true"
-
-      );
-
-      localStorage.setItem(
-
-        "voxfixPlan",
-
-        plan
-
-      );
+      console.log(data);
 
       alert(
-        "Payment successful."
+`Payment successful.
+
+Premium activation may take a few seconds.`
       );
 
-      window.location.href =
-        "index.html";
+      location.reload();
 
     },
 
@@ -135,4 +158,71 @@ window.payNow = function(plan){
 
   });
 
-};
+}
+
+/* ====================================
+   BUTTONS
+==================================== */
+
+document
+
+.getElementById(
+  "weeklyBtn"
+)
+
+?.addEventListener(
+
+  "click",
+
+  ()=>{
+
+    payNow(
+      "weekly",
+      5
+    );
+
+  }
+
+);
+
+document
+
+.getElementById(
+  "monthlyBtn"
+)
+
+?.addEventListener(
+
+  "click",
+
+  ()=>{
+
+    payNow(
+      "monthly",
+      15
+    );
+
+  }
+
+);
+
+document
+
+.getElementById(
+  "lifetimeBtn"
+)
+
+?.addEventListener(
+
+  "click",
+
+  ()=>{
+
+    payNow(
+      "lifetime",
+      79
+    );
+
+  }
+
+);

@@ -3,7 +3,7 @@
 
 <head>
 
-<meta charset="UTF-8"/>
+<meta charset="UTF-8">
 
 <meta
 name="viewport"
@@ -30,178 +30,300 @@ rel="stylesheet"
 
 <div class="pricing-page">
 
-  <div class="bg-glow glow1"></div>
-  <div class="bg-glow glow2"></div>
+<!-- HERO -->
 
-  <!-- HERO -->
+<section class="pricing-hero">
 
-  <section class="pricing-hero">
+<div class="pricing-badge">
 
-    <div class="pricing-badge">
-      PREMIUM AI EXPERIENCE
-    </div>
-
-    <h1>
-      Unlock The Full Power
-      Of VoxFix AI
-    </h1>
-
-    <p>
-      Upgrade to premium AI tools,
-      multilingual support,
-      advanced message rewriting,
-      voice transcription
-      and priority AI generation.
-    </p>
-
-  </section>
-
-  <!-- PRICING GRID -->
-
-  <section class="pricing-grid">
-
-    <!-- WEEKLY -->
-
-    <div class="price-card">
-
-      <div class="plan">
-        Starter
-      </div>
-
-      <div class="price">
-        $4.99
-      </div>
-
-      <div class="duration">
-        per week
-      </div>
-
-      <ul>
-
-        <li>
-          ✓ Unlimited rewrites
-        </li>
-
-        <li>
-          ✓ AI polishing
-        </li>
-
-        <li>
-          ✓ Smart rewriting
-        </li>
-
-      </ul>
-
-      <button
-        onclick="payNow('weekly')"
-        class="price-btn"
-      >
-        Start Premium →
-      </button>
-
-    </div>
-
-    <!-- MONTHLY -->
-
-    <div class="price-card featured">
-
-      <div class="popular-badge">
-        MOST POPULAR
-      </div>
-
-      <div class="plan">
-        Premium Pro
-      </div>
-
-      <div class="price">
-        $14.99
-      </div>
-
-      <div class="duration">
-        per month
-      </div>
-
-      <ul>
-
-        <li>
-          ✓ Everything in Starter
-        </li>
-
-        <li>
-          ✓ 100+ AI languages
-        </li>
-
-        <li>
-          ✓ Voice transcription
-        </li>
-
-        <li>
-          ✓ Advanced AI tones
-        </li>
-
-      </ul>
-
-      <button
-        onclick="payNow('monthly')"
-        class="price-btn featured-btn"
-      >
-        Unlock Premium →
-      </button>
-
-    </div>
-
-    <!-- LIFETIME -->
-
-    <div class="price-card lifetime">
-
-      <div class="gold-badge">
-        BEST VALUE
-      </div>
-
-      <div class="plan">
-        Lifetime
-      </div>
-
-      <div class="price">
-        $79
-      </div>
-
-      <div class="duration">
-        one-time payment
-      </div>
-
-      <ul>
-
-        <li>
-          ✓ Lifetime premium
-        </li>
-
-        <li>
-          ✓ Future AI updates
-        </li>
-
-        <li>
-          ✓ Unlimited everything
-        </li>
-
-      </ul>
-
-      <button
-        onclick="payNow('lifetime')"
-        class="price-btn gold-btn"
-      >
-        Get Lifetime →
-      </button>
-
-    </div>
-
-  </section>
+💎 PREMIUM AI EXPERIENCE
 
 </div>
 
-<script
-src="https://checkout.flutterwave.com/v3.js"
-></script>
+<h1>
+
+Unlock The Full Power
+Of VoxFix AI
+
+</h1>
+
+<p>
+
+Upgrade to premium AI rewriting,
+multilingual support,
+advanced communication tools,
+voice transcription,
+priority AI generation
+and elite emotional intelligence.
+
+</p>
+
+</section>
+
+<!-- PRICING GRID -->
+
+<section class="pricing-grid">
+
+<!-- STARTER -->
+
+<div class="price-card">
+
+<div class="plan-label">
+STARTER
+</div>
+
+<h2>
+Starter
+</h2>
+
+<div class="price">
+
+$4.99
+
+<span>
+per week
+</span>
+
+</div>
+
+<ul>
+
+<li>
+✔ Unlimited rewrites
+</li>
+
+<li>
+✔ AI polishing
+</li>
+
+<li>
+✔ Smart rewriting
+</li>
+
+<li>
+✔ Faster AI response
+</li>
+
+<li>
+✔ Basic voice support
+</li>
+
+</ul>
+
+<button
+class="plan-btn"
+onclick="startPayment('starter')"
+>
+
+Start Premium →
+
+</button>
+
+</div>
+
+<!-- PREMIUM -->
+
+<div class="price-card featured">
+
+<div class="popular-tag">
+
+MOST POPULAR
+
+</div>
+
+<div class="plan-label">
+PREMIUM PRO
+</div>
+
+<h2>
+Premium Pro
+</h2>
+
+<div class="price">
+
+$14.99
+
+<span>
+per month
+</span>
+
+</div>
+
+<ul>
+
+<li>
+✔ Everything in Starter
+</li>
+
+<li>
+✔ 100+ AI languages
+</li>
+
+<li>
+✔ Voice transcription
+</li>
+
+<li>
+✔ Advanced AI tones
+</li>
+
+<li>
+✔ Premium emotional intelligence
+</li>
+
+<li>
+✔ Viral rewrite mode
+</li>
+
+<li>
+✔ Luxury communication mode
+</li>
+
+</ul>
+
+<button
+class="plan-btn featured-btn"
+onclick="startPayment('pro')"
+>
+
+Unlock Premium →
+
+</button>
+
+</div>
+
+<!-- LIFETIME -->
+
+<div class="price-card">
+
+<div class="plan-label">
+BEST VALUE
+</div>
+
+<h2>
+Lifetime
+</h2>
+
+<div class="price">
+
+$79
+
+<span>
+one time payment
+</span>
+
+</div>
+
+<ul>
+
+<li>
+✔ Lifetime premium
+</li>
+
+<li>
+✔ Future AI updates
+</li>
+
+<li>
+✔ Unlimited everything
+</li>
+
+<li>
+✔ Priority future features
+</li>
+
+<li>
+✔ Elite AI access forever
+</li>
+
+</ul>
+
+<button
+class="plan-btn"
+onclick="startPayment('lifetime')"
+>
+
+Get Lifetime →
+
+</button>
+
+</div>
+
+</section>
+
+<!-- SOCIAL PROOF -->
+
+<section class="social-proof">
+
+<div class="proof-card">
+
+<h3>
+12,000+
+</h3>
+
+<p>
+Messages rewritten daily
+</p>
+
+</div>
+
+<div class="proof-card">
+
+<h3>
+100+
+</h3>
+
+<p>
+Supported languages
+</p>
+
+</div>
+
+<div class="proof-card">
+
+<h3>
+4.9/5
+</h3>
+
+<p>
+Premium satisfaction score
+</p>
+
+</div>
+
+</section>
+
+<!-- CTA -->
+
+<section class="bottom-cta">
+
+<h2>
+
+Your communication changes everything.
+
+</h2>
+
+<p>
+
+Upgrade your messaging,
+business communication,
+content writing
+and social confidence instantly.
+
+</p>
+
+<a
+href="index.html"
+class="back-home"
+>
+
+← Back Home
+
+</a>
+
+</section>
+
+</div>
 
 <script
 type="module"
@@ -209,5 +331,4 @@ src="pricing.js"
 ></script>
 
 </body>
-
 </html>
