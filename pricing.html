@@ -10,13 +10,11 @@ name="viewport"
 content="width=device-width, initial-scale=1.0"
 />
 
-<title>
-VoxFix AI Premium
-</title>
+<title>VoxFix AI Premium</title>
 
 <link
 rel="stylesheet"
-href="style.css"
+href="./style.css"
 />
 
 <link
@@ -24,169 +22,156 @@ href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;90
 rel="stylesheet"
 />
 
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+
 </head>
 
 <body>
 
 <div class="pricing-page">
 
-<!-- HERO -->
+<header class="pricing-navbar">
+
+<div class="pricing-logo">
+
+<div class="pricing-logo-circle">
+V
+</div>
+
+<h2>
+VoxFix AI
+</h2>
+
+</div>
+
+<nav class="pricing-nav-links">
+
+<a href="index.html">
+Home
+</a>
+
+<a href="pricing.html" class="active-link">
+Premium
+</a>
+
+<a href="auth.html">
+Account
+</a>
+
+</nav>
+
+</header>
 
 <section class="pricing-hero">
 
-<div class="pricing-badge">
+<div class="pricing-chip">
 
-💎 PREMIUM AI EXPERIENCE
+💎 PREMIUM AI ACCESS
 
 </div>
 
 <h1>
 
-Unlock The Full Power
-Of VoxFix AI
+Sound Smarter.
+Write Better.
+Communicate Like A Pro.
 
 </h1>
 
 <p>
 
-Upgrade to premium AI rewriting,
-multilingual support,
-advanced communication tools,
-voice transcription,
-priority AI generation
-and elite emotional intelligence.
+Unlock emotionally intelligent AI rewriting,
+voice note polishing,
+100+ languages,
+and premium communication tools.
 
 </p>
 
 </section>
 
-<!-- PRICING GRID -->
-
 <section class="pricing-grid">
 
-<!-- STARTER -->
+<!-- WEEKLY -->
 
 <div class="price-card">
 
-<div class="plan-label">
+<div class="plan-tag">
 STARTER
 </div>
 
 <h2>
-Starter
+Weekly
 </h2>
 
-<div class="price">
-
+<h3>
 $4.99
+</h3>
 
-<span>
-per week
-</span>
-
-</div>
+<p class="billing">
+7 Days Access
+</p>
 
 <ul>
 
-<li>
-✔ Unlimited rewrites
-</li>
-
-<li>
-✔ AI polishing
-</li>
-
-<li>
-✔ Smart rewriting
-</li>
-
-<li>
-✔ Faster AI response
-</li>
-
-<li>
-✔ Basic voice support
-</li>
+<li>✓ Premium AI Rewrite</li>
+<li>✓ Emotional Intelligence</li>
+<li>✓ Voice Note Upload</li>
+<li>✓ Faster AI Responses</li>
 
 </ul>
 
 <button
-class="plan-btn"
-onclick="startPayment('starter')"
+class="price-btn"
+onclick="payWeekly()"
 >
 
-Start Premium →
+Start Weekly
 
 </button>
 
 </div>
 
-<!-- PREMIUM -->
+<!-- MONTHLY -->
 
-<div class="price-card featured">
+<div class="price-card featured-card">
 
-<div class="popular-tag">
-
+<div class="popular-badge">
 MOST POPULAR
-
 </div>
 
-<div class="plan-label">
-PREMIUM PRO
+<div class="plan-tag premium-plan">
+PREMIUM
 </div>
 
 <h2>
-Premium Pro
+Monthly
 </h2>
 
-<div class="price">
+<h3>
+$15
+</h3>
 
-$14.99
-
-<span>
-per month
-</span>
-
-</div>
+<p class="billing">
+Per Month
+</p>
 
 <ul>
 
-<li>
-✔ Everything in Starter
-</li>
-
-<li>
-✔ 100+ AI languages
-</li>
-
-<li>
-✔ Voice transcription
-</li>
-
-<li>
-✔ Advanced AI tones
-</li>
-
-<li>
-✔ Premium emotional intelligence
-</li>
-
-<li>
-✔ Viral rewrite mode
-</li>
-
-<li>
-✔ Luxury communication mode
-</li>
+<li>✓ Unlimited AI Rewrite</li>
+<li>✓ Luxury Rewrite Tone</li>
+<li>✓ CEO Rewrite Mode</li>
+<li>✓ Voice AI</li>
+<li>✓ 100+ Languages</li>
+<li>✓ Priority AI Speed</li>
 
 </ul>
 
 <button
-class="plan-btn featured-btn"
-onclick="startPayment('pro')"
+class="price-btn premium-btn-main"
+onclick="payMonthly()"
 >
 
-Unlock Premium →
+Upgrade Monthly
 
 </button>
 
@@ -196,7 +181,7 @@ Unlock Premium →
 
 <div class="price-card">
 
-<div class="plan-label">
+<div class="plan-tag business-plan">
 BEST VALUE
 </div>
 
@@ -204,46 +189,30 @@ BEST VALUE
 Lifetime
 </h2>
 
-<div class="price">
-
+<h3>
 $79
+</h3>
 
-<span>
-one time payment
-</span>
-
-</div>
+<p class="billing">
+One Time Payment
+</p>
 
 <ul>
 
-<li>
-✔ Lifetime premium
-</li>
-
-<li>
-✔ Future AI updates
-</li>
-
-<li>
-✔ Unlimited everything
-</li>
-
-<li>
-✔ Priority future features
-</li>
-
-<li>
-✔ Elite AI access forever
-</li>
+<li>✓ Lifetime Premium Access</li>
+<li>✓ Future AI Features</li>
+<li>✓ Unlimited Voice AI</li>
+<li>✓ Unlimited Languages</li>
+<li>✓ Priority Access Forever</li>
 
 </ul>
 
 <button
-class="plan-btn"
-onclick="startPayment('lifetime')"
+class="price-btn"
+onclick="payLifetime()"
 >
 
-Get Lifetime →
+Unlock Forever
 
 </button>
 
@@ -251,84 +220,33 @@ Get Lifetime →
 
 </section>
 
-<!-- SOCIAL PROOF -->
-
-<section class="social-proof">
-
-<div class="proof-card">
-
-<h3>
-12,000+
-</h3>
-
-<p>
-Messages rewritten daily
-</p>
-
-</div>
-
-<div class="proof-card">
-
-<h3>
-100+
-</h3>
-
-<p>
-Supported languages
-</p>
-
-</div>
-
-<div class="proof-card">
-
-<h3>
-4.9/5
-</h3>
-
-<p>
-Premium satisfaction score
-</p>
-
-</div>
-
-</section>
-
-<!-- CTA -->
-
-<section class="bottom-cta">
+<section class="pricing-bottom-cta">
 
 <h2>
 
-Your communication changes everything.
+Upgrade Your Communication Today
 
 </h2>
 
 <p>
 
-Upgrade your messaging,
-business communication,
-content writing
-and social confidence instantly.
+Thousands of future users
+will sound smarter with VoxFix AI.
 
 </p>
 
 <a
 href="index.html"
-class="back-home"
+class="bottom-cta-btn"
 >
 
-← Back Home
+Start Using AI
 
 </a>
 
 </section>
 
-</div>
-
-<script
-type="module"
-src="pricing.js"
-></script>
+<script src="./pricing.js"></script>
 
 </body>
 </html>

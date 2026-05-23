@@ -1,6 +1,5 @@
 import {
-    auth,
-    db
+    auth
 } from "./firebase.js";
 
 import {
@@ -8,22 +7,39 @@ import {
     signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import {
-    doc,
-    getDoc,
-    updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+/* =========================================
+   SAFE ELEMENTS
+========================================= */
+
+const sidebar =
+document.getElementById(
+    "sidebar"
+);
+
+const fixBtn =
+document.getElementById(
+    "fixBtn"
+);
+
+const resultText =
+document.getElementById(
+    "resultText"
+);
 
 /* =========================================
    SIDEBAR
 ========================================= */
 
-window.toggleSidebar = function(){
+window.toggleSidebar =
+function(){
 
-    document
-    .getElementById("sidebar")
-    .classList
-    .toggle("active");
+    if(sidebar){
+
+        sidebar.classList.toggle(
+            "active"
+        );
+
+    }
 
 };
 
@@ -31,11 +47,12 @@ window.toggleSidebar = function(){
    SECTION SWITCHING
 ========================================= */
 
-window.showSection = function(id){
+window.showSection =
+function(id){
 
     document
     .querySelectorAll(".app-section")
-    .forEach(section => {
+    .forEach(section=>{
 
         section.classList.remove(
             "active-section"
@@ -43,17 +60,24 @@ window.showSection = function(id){
 
     });
 
-    document
-    .getElementById(id)
-    .classList.add(
-        "active-section"
-    );
+    const target =
+    document.getElementById(id);
 
-    document
-    .getElementById("sidebar")
-    .classList.remove(
-        "active"
-    );
+    if(target){
+
+        target.classList.add(
+            "active-section"
+        );
+
+    }
+
+    if(sidebar){
+
+        sidebar.classList.remove(
+            "active"
+        );
+
+    }
 
 };
 
@@ -61,70 +85,55 @@ window.showSection = function(id){
    AUTH
 ========================================= */
 
-onAuthStateChanged(auth, async(user)=>{
+onAuthStateChanged(
+    auth,
+    (user)=>{
 
-    const greeting =
-    document.getElementById(
-        "userGreeting"
-    );
+        const greeting =
+        document.getElementById(
+            "userGreeting"
+        );
 
-    const authLink =
-    document.getElementById(
-        "authLink"
-    );
+        if(user){
 
-    if(user){
+            greeting.innerText =
+            `Hi, ${user.displayName || "User"}`;
 
-        authLink.style.display =
-        "none";
+        }else{
 
-        greeting.innerText =
-        `Hi, ${user.displayName || "User"}`;
+            greeting.innerText =
+            "Guest User";
 
-        loadHistory(user.uid);
-
-    }else{
-
-        greeting.innerText =
-        "Guest User";
+        }
 
     }
-
-});
+);
 
 /* =========================================
    LOGOUT
 ========================================= */
 
-window.logoutUser = async function(){
+window.logoutUser =
+async function(){
 
     try{
 
         await signOut(auth);
-
-        alert(
-            "Logged out successfully."
-        );
 
         location.href =
         "auth.html";
 
     }catch(error){
 
-        alert(error.message);
+        console.log(error);
 
     }
 
 };
 
 /* =========================================
-   FIX MESSAGE
+   AI GENERATION
 ========================================= */
-
-const fixBtn =
-document.getElementById(
-    "fixBtn"
-);
 
 fixBtn.addEventListener(
     "click",
@@ -133,7 +142,7 @@ fixBtn.addEventListener(
         const input =
         document.getElementById(
             "promptInput"
-        ).value;
+        ).value.trim();
 
         const tone =
         document.getElementById(
@@ -155,16 +164,49 @@ fixBtn.addEventListener(
 
         }
 
-        document.getElementById(
-            "resultText"
-        ).innerHTML =
-        `
-        ✨ Rewritten in ${tone} tone (${language}):
+        resultText.innerHTML =
+        "✨ VoxFix AI is thinking...";
 
-        <br><br>
+        try{
 
-        ${input}
-        `;
+            const response =
+            await fetch(
+                "/api/generate",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        message:input,
+
+                        tone,
+
+                        language
+
+                    })
+
+                }
+            );
+
+            const data =
+            await response.json();
+
+            resultText.innerHTML =
+            data.result;
+
+        }catch(error){
+
+            console.log(error);
+
+            resultText.innerHTML =
+            "AI generation failed.";
+
+        }
 
     }
 );
@@ -173,15 +215,11 @@ fixBtn.addEventListener(
    COPY
 ========================================= */
 
-window.copyResult = function(){
-
-    const text =
-    document.getElementById(
-        "resultText"
-    ).innerText;
+window.copyResult =
+function(){
 
     navigator.clipboard.writeText(
-        text
+        resultText.innerText
     );
 
     alert(
@@ -194,12 +232,8 @@ window.copyResult = function(){
    SHARE
 ========================================= */
 
-window.shareAIResult = async function(){
-
-    const text =
-    document.getElementById(
-        "resultText"
-    ).innerText;
+window.shareAIResult =
+async function(){
 
     if(navigator.share){
 
@@ -207,76 +241,14 @@ window.shareAIResult = async function(){
 
             title:"VoxFix AI",
 
-            text:text
+            text:
+            resultText.innerText
 
         });
-
-    }else{
-
-        alert(
-            "Sharing not supported on this device."
-        );
 
     }
 
 };
-
-/* =========================================
-   HISTORY
-========================================= */
-
-async function loadHistory(uid){
-
-    try{
-
-        const ref =
-        doc(
-            db,
-            "users",
-            uid
-        );
-
-        const snap =
-        await getDoc(ref);
-
-        if(snap.exists()){
-
-            const data =
-            snap.data();
-
-            const history =
-            data.history || [];
-
-            const list =
-            document.getElementById(
-                "historyList"
-            );
-
-            if(history.length === 0){
-
-                list.innerHTML =
-                "No saved history.";
-
-                return;
-
-            }
-
-            list.innerHTML =
-            history.map(item=>`
-                <div class="history-item">
-                    ${item}
-                </div>
-            `).join("");
-
-        }
-
-    }catch(error){
-
-        console.log(error);
-
-    }
-
-}
 
 /* =========================================
    SETTINGS
@@ -298,14 +270,5 @@ function(){
         "historyList"
     ).innerHTML =
     "History cleared.";
-
-};
-
-window.resetFreeUses =
-function(){
-
-    alert(
-        "Free usage reset."
-    );
 
 };

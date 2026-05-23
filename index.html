@@ -2,493 +2,158 @@
 <html lang="en">
 
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<meta charset="UTF-8"/>
+<title>VoxFix AI</title>
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
-/>
-
-<title>
-VoxFix AI
-</title>
-
-<link
-rel="stylesheet"
-href="style.css"
-/>
-
-<link
-href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-rel="stylesheet"
-/>
+<link rel="stylesheet" href="./style.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <script src="https://checkout.flutterwave.com/v3.js"></script>
-
 </head>
 
 <body>
 
-<div class="app-layout">
+<div class="dashboard-layout">
 
-<!-- =========================================
-     SIDEBAR
-========================================= -->
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
 
-<aside
-class="sidebar"
-id="sidebar"
->
-
-<div class="brand">
-
-<div class="brand-icon">
-V
+<div class="logo-area">
+<div class="logo-circle">V</div>
+<h2>VoxFix AI</h2>
 </div>
 
-<div class="brand-name">
-VoxFix AI
-</div>
+<nav class="sidebar-links">
 
-</div>
+<a href="index.html">🏠 Dashboard</a>
+<a href="pricing.html">💎 Premium</a>
+<a href="history.html">🕘 History</a>
+<a href="languages.html">🌍 Languages</a>
+<a href="settings.html">⚙ Settings</a>
 
-<nav class="sidebar-menu">
-
-<a
-href="#"
-onclick="showSection('homeSection')"
->
-🏠 Home
-</a>
-
-<a
-href="#"
-onclick="showSection('premiumSection')"
->
-💎 Premium
-</a>
-
-<a
-href="#"
-onclick="showSection('historySection')"
->
-🕘 History
-</a>
-
-<a
-href="#"
-onclick="showSection('languageSection')"
->
-🌍 Languages
-</a>
-
-<a
-href="#"
-onclick="showSection('voiceSection')"
->
-🎤 Voice AI
-</a>
-
-<a
-href="#"
-onclick="showSection('rewriteSection')"
->
-🧠 Smart Rewrite
-</a>
-
-<a
-href="#"
-onclick="showSection('settingsSection')"
->
-⚙ Settings
-</a>
-
-<a
-href="#"
-onclick="logoutUser()"
->
-🚪 Logout
-</a>
+<button onclick="logoutUser()">🚪 Logout</button>
 
 </nav>
 
 </aside>
 
-<!-- =========================================
-     MAIN
-========================================= -->
+<!-- MAIN -->
+<main class="dashboard-main">
 
-<main class="main-content">
-
-<!-- TOPBAR -->
-
+<!-- TOP BAR -->
 <header class="topbar">
 
-<button
-class="menu-btn"
-onclick="toggleSidebar()"
->
+<button class="menu-button" onclick="toggleSidebar()">☰</button>
 
-☰
+<div class="top-right">
 
-</button>
-
-<div class="topbar-right">
-
-<a
-href="auth.html"
-class="auth-link"
-id="authLink"
->
-
-Login
-
-</a>
-
-<div
-class="user-greeting"
-id="userGreeting"
->
-
-Hi, User
-
+<div class="online-status">
+<div class="status-dot"></div>
+AI Active
 </div>
 
-<a
-href="#"
-class="upgrade-btn"
-onclick="showSection('premiumSection')"
->
-
-Free Plan
-
-</a>
+<a href="pricing.html" class="upgrade-btn">Upgrade</a>
 
 </div>
 
 </header>
 
-<!-- =========================================
-     HOME SECTION
-========================================= -->
+<!-- HERO -->
+<section class="hero-panel">
 
-<section
-id="homeSection"
-class="app-section active-section"
->
-
-<div class="hero-section">
-
-<div class="hero-badge">
-
-🌍 Trusted Global AI Assistant
-
-</div>
+<div class="hero-chip">⚡ Premium AI Communication</div>
 
 <h1>
-
-Rewrite Messages
-Like A Genius
-
+Turn Rough Messages Into Powerful Communication
 </h1>
 
 <p>
-
-Turn rough communication
-into emotionally intelligent,
-premium AI-powered messaging.
-
+VoxFix AI rewrites your messages into confident, intelligent, and emotionally refined communication that improves how people perceive you.
 </p>
 
-</div>
+<div class="hero-buttons">
 
-<div class="dashboard-grid">
+<a href="pricing.html" class="hero-primary">
+Unlock Premium
+</a>
 
-<!-- MAIN PANEL -->
-
-<div class="main-ai-panel">
-
-<div class="panel-top">
-
-<div class="ai-status">
-
-<div class="dot"></div>
-
-AI Online
+<a href="languages.html" class="hero-secondary">
+Explore Languages
+</a>
 
 </div>
 
-<div class="language-badge">
+</section>
 
-100+ Languages
+<!-- MAIN GRID -->
+<section class="dashboard-grid">
 
-</div>
+<!-- AI INPUT -->
+<div class="ai-panel">
 
-</div>
+<h2>AI Workspace</h2>
 
-<textarea
-id="promptInput"
-placeholder="Type your message here..."
-></textarea>
+<textarea id="promptInput" placeholder="Type your message here..."></textarea>
 
-<label class="audio-upload">
-
-<input
-type="file"
-hidden
-id="audioInput"
-accept="audio/*"
-/>
-
-🎤 Upload Voice Note
-
-</label>
-
-<div class="controls-grid">
+<div class="controls">
 
 <select id="toneSelect">
-
-<option>
-Professional
-</option>
-
-<option>
-Friendly
-</option>
-
-<option>
-Luxury 🔒
-</option>
-
-<option>
-CEO Mode 🔒
-</option>
-
-<option>
-Influencer 🔒
-</option>
-
+<option>Professional</option>
+<option>Friendly</option>
+<option>Luxury 🔒</option>
+<option>CEO 🔒</option>
+<option>Dating 🔒</option>
 </select>
 
 <select id="languageSelect">
-
 <option>English</option>
 <option>French</option>
 <option>Spanish</option>
 <option>Arabic</option>
-<option>Japanese</option>
-<option>Chinese</option>
 <option>German</option>
-<option>Russian</option>
 <option>Yoruba</option>
 <option>Igbo</option>
 <option>Hausa</option>
-
 </select>
 
-<button id="fixBtn">
+</div>
 
-✨ Fix Message
+<label class="upload-box">
+<input type="file" id="audioInput" hidden />
+🎤 Upload Voice Note
+</label>
 
+<button id="fixBtn" class="fix-button">
+✨ Generate Premium Rewrite
 </button>
-
-</div>
-
-</div>
-
-<!-- RIGHT -->
-
-<div class="right-side-panel">
-
-<div class="mini-premium-card">
-
-<div class="premium-small-text">
-
-🔥 PREMIUM AI
-
-</div>
-
-<h2>
-
-Unlock Elite Communication
-
-</h2>
-
-<p>
-
-Access luxury AI tones,
-viral rewrites,
-multilingual intelligence
-and priority processing.
-
-</p>
-
-<div class="premium-price-mini">
-
-$15/month
-
-</div>
-
-<button
-class="mini-upgrade-btn"
-onclick="showSection('premiumSection')"
->
-
-Upgrade Now
-
-</button>
-
-</div>
-
-<div class="feature-stack">
-
-<div class="feature-box">
-
-<div class="feature-icon">
-🌍
-</div>
-
-<div>
-
-<h3>
-Global AI
-</h3>
-
-<p>
-100+ supported languages
-</p>
-
-</div>
-
-</div>
-
-<div class="feature-box">
-
-<div class="feature-icon">
-🎤
-</div>
-
-<div>
-
-<h3>
-Voice AI
-</h3>
-
-<p>
-Premium transcription
-</p>
-
-</div>
-
-</div>
-
-<div class="feature-box">
-
-<div class="feature-icon">
-🧠
-</div>
-
-<div>
-
-<h3>
-Emotional Intelligence
-</h3>
-
-<p>
-Human-like rewriting
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
 
 </div>
 
 <!-- RESULT -->
+<div class="result-panel">
 
-<div class="result-section">
+<h2>AI Result</h2>
 
-<div class="result-header">
-
-<h2>
-AI Result
-</h2>
-
-<div class="result-badge">
-
-Powered By VoxFix AI
-
-</div>
-
-</div>
-
-<div
-class="result-output"
-id="resultText"
->
-
-Your AI result will appear here.
-
-</div>
-
-<div class="quality-top">
-
-<span>
-AI Quality
-</span>
-
-<span>
-94%
-</span>
-
-</div>
-
-<div class="quality-bar">
-
-<div class="quality-fill"></div>
-
+<div id="resultText" class="result-output">
+Your polished message will appear here...
 </div>
 
 <div class="result-actions">
-
-<button
-class="copy-btn"
-onclick="copyResult()"
->
-
-Copy Result
-
-</button>
-
-<button
-class="share-btn"
-onclick="shareAIResult()"
->
-
-Share AI Card
-
-</button>
-
+<button onclick="copyResult()">Copy</button>
+<button onclick="shareAIResult()">Share</button>
 </div>
 
 </div>
 
 </section>
 
-
 </main>
 
 </div>
 
-<script
-type="module"
-src="app.js"
-></script>
+<script type="module" src="./app.js"></script>
 
 </body>
 </html>
