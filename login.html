@@ -1,72 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Login - VoxFix AI</title>
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="/assets/style.css"/>
 
-<title>Login</title>
+<style>
 
-<link rel="stylesheet" href="style.css"/>
+/* PAGE CENTER */
+.auth-body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    background:#0b1220;
+}
 
+/* CARD */
+.auth-card{
+    width:360px;
+    background:#111827;
+    border:1px solid #1f2937;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.35);
+}
+
+/* TITLE */
+.auth-card h2{
+    margin-bottom:8px;
+    font-size:28px;
+}
+
+.subtext{
+    color:#94a3b8;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+/* INPUTS */
+.auth-card input{
+    width:100%;
+    margin-bottom:14px;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #334155;
+    background:#0f172a;
+    color:white;
+    outline:none;
+}
+
+/* BUTTON */
+.auth-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#3b82f6;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.25s ease;
+    position:relative;
+    overflow:hidden;
+}
+
+/* HOVER */
+.auth-btn:hover{
+    background:#2563eb;
+}
+
+/* LOADING */
+.auth-btn.loading{
+    pointer-events:none;
+    opacity:0.9;
+}
+
+/* SPINNER */
+.spinner{
+    width:18px;
+    height:18px;
+    border:2px solid rgba(255,255,255,0.4);
+    border-top:2px solid white;
+    border-radius:50%;
+    animation:spin 0.7s linear infinite;
+    margin:auto;
+}
+
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+/* FOOTER */
+.auth-footer{
+    margin-top:18px;
+    text-align:center;
+    color:#94a3b8;
+    font-size:14px;
+}
+
+.auth-footer a{
+    color:#3b82f6;
+    text-decoration:none;
+}
+
+.status{
+    margin-top:14px;
+    font-size:13px;
+    color:#94a3b8;
+    text-align:center;
+}
+
+</style>
 </head>
 
-<body>
+<body class="auth-body">
 
-<div class="app-box">
+<div class="auth-card">
 
-<h1>Welcome Back</h1>
+    <h2>Welcome back</h2>
 
-<p class="subtitle">
-Login to continue
-</p>
+    <p class="subtext">
+        Continue improving your communication instantly.
+    </p>
 
-<input
-type="email"
-id="email"
-placeholder="Email Address"
-/>
+    <input
+        id="email"
+        type="email"
+        placeholder="Enter your email"
+    />
 
-<input
-type="password"
-id="password"
-placeholder="Password"
-/>
+    <input
+        id="password"
+        type="password"
+        placeholder="Enter your password"
+    />
 
-<button
-onclick="login()"
-class="main-btn">
+    <button id="loginBtn" class="auth-btn">
+        Login
+    </button>
 
-Login
+    <div id="statusText" class="status"></div>
 
-</button>
-
-<button
-onclick="googleLogin()"
-class="upgrade-btn">
-
-Continue With Google
-
-</button>
-
-<p style="margin-top:20px;text-align:center;">
-
-No account?
-
-<a href="signup.html"
-style="color:#22c55e;">
-
-Create One
-
-</a>
-
-</p>
+    <div class="auth-footer">
+        Don’t have an account?
+        <a href="/signup.html">Create account</a>
+    </div>
 
 </div>
 
-<script type="module" src="auth.js"></script>
+
+<script type="module">
+
+import {
+    login,
+    initAuthRedirects
+} from "/js/auth.js";
+
+
+/* INIT REDIRECT SYSTEM */
+initAuthRedirects();
+
+
+const btn = document.getElementById("loginBtn");
+const status = document.getElementById("statusText");
+
+
+btn.addEventListener("click", async () => {
+
+    const email = document.getElementById("email").value.trim();
+
+    const password = document.getElementById("password").value.trim();
+
+    if(!email || !password){
+        status.innerText = "Please complete all fields";
+        return;
+    }
+
+    try{
+
+        /* LOADING STATE */
+        btn.classList.add("loading");
+
+        btn.innerHTML = `
+            <div class="spinner"></div>
+        `;
+
+        status.innerText = "Signing you in...";
+
+        await login(email, password);
+
+        status.innerText = "Success. Redirecting...";
+
+        /* SMOOTH DELAY */
+        setTimeout(() => {
+            window.location.href = "/dashboard.html";
+        }, 1200);
+
+    }catch(err){
+
+        btn.classList.remove("loading");
+
+        btn.innerHTML = `Login`;
+
+        status.innerText =
+            err.message || "Login failed";
+
+    }
+
+});
+
+</script>
 
 </body>
 </html>

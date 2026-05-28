@@ -1,252 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
-/>
-
-<title>VoxFix AI Premium</title>
-
-<link
-rel="stylesheet"
-href="./style.css"
-/>
-
-<link
-href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-rel="stylesheet"
-/>
-
-<script src="https://checkout.flutterwave.com/v3.js"></script>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Upgrade - VoxFix AI</title>
+<link rel="stylesheet" href="/assets/style.css"/>
 </head>
 
 <body>
 
-<div class="pricing-page">
+<div class="pricing-container">
 
-<header class="pricing-navbar">
+    <h1>Unlock full communication power</h1>
 
-<div class="pricing-logo">
+    <p class="subtext">
+        Remove limits and get unlimited AI assistance.
+    </p>
 
-<div class="pricing-logo-circle">
-V
-</div>
+    <div class="pricing-card highlight">
 
-<h2>
-VoxFix AI
-</h2>
+        <h2>Pro Plan</h2>
 
-</div>
+        <ul>
+            <li>Unlimited message polishing</li>
+            <li>Unlimited reply generation</li>
+            <li>Full voice transcription access</li>
+            <li>Priority AI processing</li>
+        </ul>
 
-<nav class="pricing-nav-links">
+        <div class="price">$10 / month</div>
 
-<a href="index.html">
-Home
-</a>
+        <button id="payBtn" class="btn-primary">
+            Upgrade Now
+        </button>
 
-<a href="pricing.html" class="active-link">
-Premium
-</a>
+        <p class="trust-line">
+            Secure payment via Flutterwave
+        </p>
 
-<a href="auth.html">
-Account
-</a>
-
-</nav>
-
-</header>
-
-<section class="pricing-hero">
-
-<div class="pricing-chip">
-
-💎 PREMIUM AI ACCESS
+    </div>
 
 </div>
 
-<h1>
-
-Sound Smarter.
-Write Better.
-Communicate Like A Pro.
-
-</h1>
-
-<p>
-
-Unlock emotionally intelligent AI rewriting,
-voice note polishing,
-100+ languages,
-and premium communication tools.
-
-</p>
-
-</section>
-
-<section class="pricing-grid">
-
-<!-- WEEKLY -->
-
-<div class="price-card">
-
-<div class="plan-tag">
-STARTER
-</div>
-
-<h2>
-Weekly
-</h2>
-
-<h3>
-$4.99
-</h3>
-
-<p class="billing">
-7 Days Access
-</p>
-
-<ul>
-
-<li>✓ Premium AI Rewrite</li>
-<li>✓ Emotional Intelligence</li>
-<li>✓ Voice Note Upload</li>
-<li>✓ Faster AI Responses</li>
-
-</ul>
-
-<button
-class="price-btn"
-onclick="payWeekly()"
->
-
-Start Weekly
-
-</button>
-
-</div>
-
-<!-- MONTHLY -->
-
-<div class="price-card featured-card">
-
-<div class="popular-badge">
-MOST POPULAR
-</div>
-
-<div class="plan-tag premium-plan">
-PREMIUM
-</div>
-
-<h2>
-Monthly
-</h2>
-
-<h3>
-$15
-</h3>
-
-<p class="billing">
-Per Month
-</p>
-
-<ul>
-
-<li>✓ Unlimited AI Rewrite</li>
-<li>✓ Luxury Rewrite Tone</li>
-<li>✓ CEO Rewrite Mode</li>
-<li>✓ Voice AI</li>
-<li>✓ 100+ Languages</li>
-<li>✓ Priority AI Speed</li>
-
-</ul>
-
-<button
-class="price-btn premium-btn-main"
-onclick="payMonthly()"
->
-
-Upgrade Monthly
-
-</button>
-
-</div>
-
-<!-- LIFETIME -->
-
-<div class="price-card">
-
-<div class="plan-tag business-plan">
-BEST VALUE
-</div>
-
-<h2>
-Lifetime
-</h2>
-
-<h3>
-$79
-</h3>
-
-<p class="billing">
-One Time Payment
-</p>
-
-<ul>
-
-<li>✓ Lifetime Premium Access</li>
-<li>✓ Future AI Features</li>
-<li>✓ Unlimited Voice AI</li>
-<li>✓ Unlimited Languages</li>
-<li>✓ Priority Access Forever</li>
-
-</ul>
-
-<button
-class="price-btn"
-onclick="payLifetime()"
->
-
-Unlock Forever
-
-</button>
-
-</div>
-
-</section>
-
-<section class="pricing-bottom-cta">
-
-<h2>
-
-Upgrade Your Communication Today
-
-</h2>
-
-<p>
-
-Thousands of future users
-will sound smarter with VoxFix AI.
-
-</p>
-
-<a
-href="index.html"
-class="bottom-cta-btn"
->
-
-Start Using AI
-
-</a>
-
-</section>
-
-<script src="./pricing.js"></script>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+<script type="module">
+import { payWithFlutterwave } from "/js/payment.js";
+document.getElementById("payBtn").onclick = payWithFlutterwave;
+</script>
 
 </body>
 </html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard - VoxFix AI</title>
+<link rel="stylesheet" href="/assets/style.css"/>
+</head>
+
+<body>
+
+<header class="dash-nav">
+
+    <div>
+        <h2>VoxFix AI</h2>
+        <p class="small-text">Improve messages in real time</p>
+    </div>
+
+    <a href="/pricing.html" class="btn-primary">Upgrade</a>
+
+</header>
+
+<!-- USAGE SYSTEM -->
+<div id="usageBox"></div>
+
+<!-- MAIN TOOL -->
+<div class="container">
+
+    <div class="tool-card">
+
+        <h3>Message Editor</h3>
+
+        <textarea id="messageInput" placeholder="Type or paste your message..."></textarea>
+
+        <div class="btn-row">
+            <button id="polishBtn">Polish</button>
+            <button id="replyBtn">Reply</button>
+        </div>
+
+    </div>
+
+    <div class="tool-card">
+
+        <h3>Voice Note</h3>
+
+        <p class="hint">
+            Upload a voice note to convert it into structured text.
+        </p>
+
+        <input type="file" id="audioInput"/>
+
+    </div>
+
+    <div class="result-card" id="resultBox"></div>
+
+    <div id="statusText"></div>
+
+</div>
+
+<div id="modalBox"></div>
+
+<script type="module" src="/js/dashboard-bootstrap.js"></script>
+
+</body>
+</html>

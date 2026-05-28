@@ -1,72 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Signup - VoxFix AI</title>
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="/assets/style.css"/>
 
-<title>Create Account</title>
+<style>
 
-<link rel="stylesheet" href="style.css"/>
+.auth-body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    background:#0b1220;
+}
 
+.auth-card{
+    width:360px;
+    background:#111827;
+    border:1px solid #1f2937;
+    border-radius:18px;
+    padding:28px;
+}
+
+.auth-card h2{
+    margin-bottom:8px;
+}
+
+.subtext{
+    color:#94a3b8;
+    margin-bottom:20px;
+}
+
+.auth-card input{
+    width:100%;
+    margin-bottom:14px;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #334155;
+    background:#0f172a;
+    color:white;
+}
+
+.auth-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#3b82f6;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.spinner{
+    width:18px;
+    height:18px;
+    border:2px solid rgba(255,255,255,0.4);
+    border-top:2px solid white;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    margin:auto;
+}
+
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+.status{
+    margin-top:14px;
+    font-size:13px;
+    color:#94a3b8;
+    text-align:center;
+}
+
+.auth-footer{
+    margin-top:18px;
+    text-align:center;
+}
+
+.auth-footer a{
+    color:#3b82f6;
+    text-decoration:none;
+}
+
+</style>
 </head>
 
-<body>
+<body class="auth-body">
 
-<div class="app-box">
+<div class="auth-card">
 
-<h1>Create Account</h1>
+    <h2>Create your account</h2>
 
-<p class="subtitle">
-Start using VoxFix AI
-</p>
+    <p class="subtext">
+        Start communicating more professionally today.
+    </p>
 
-<input
-type="email"
-id="email"
-placeholder="Email Address"
-/>
+    <input id="name" type="text" placeholder="Full name"/>
 
-<input
-type="password"
-id="password"
-placeholder="Password"
-/>
+    <input id="email" type="email" placeholder="Email"/>
 
-<button
-onclick="signup()"
-class="main-btn">
+    <input id="password" type="password" placeholder="Password"/>
 
-Create Account
+    <button id="signupBtn" class="auth-btn">
+        Create Account
+    </button>
 
-</button>
+    <div id="statusText" class="status"></div>
 
-<button
-onclick="googleLogin()"
-class="upgrade-btn">
-
-Continue With Google
-
-</button>
-
-<p style="margin-top:20px;text-align:center;">
-
-Already have an account?
-
-<a href="login.html"
-style="color:#22c55e;">
-
-Login
-
-</a>
-
-</p>
+    <div class="auth-footer">
+        Already have an account?
+        <a href="/login.html">Login</a>
+    </div>
 
 </div>
 
-<script type="module" src="auth.js"></script>
+
+<script type="module">
+
+import {
+    signup,
+    initAuthRedirects
+} from "/js/auth.js";
+
+
+initAuthRedirects();
+
+
+const btn = document.getElementById("signupBtn");
+const status = document.getElementById("statusText");
+
+
+btn.addEventListener("click", async () => {
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value.trim();
+
+    if(!name || !email || !password){
+        status.innerText = "Please complete all fields";
+        return;
+    }
+
+    try{
+
+        btn.innerHTML = `
+            <div class="spinner"></div>
+        `;
+
+        status.innerText =
+            "Creating your account...";
+
+        await signup(email, password, name);
+
+        status.innerText =
+            "Account created successfully";
+
+        setTimeout(() => {
+            window.location.href = "/dashboard.html";
+        }, 1400);
+
+    }catch(err){
+
+        btn.innerHTML = `Create Account`;
+
+        status.innerText =
+            err.message || "Signup failed";
+
+    }
+
+});
+
+</script>
 
 </body>
 </html>

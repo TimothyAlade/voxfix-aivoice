@@ -1,159 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<title>VoxFix AI</title>
-
-<link rel="stylesheet" href="./style.css" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-<script src="https://checkout.flutterwave.com/v3.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VoxFix AI - Turn Messages Into Clarity</title>
+<link rel="stylesheet" href="/assets/style.css"/>
 </head>
 
 <body>
 
-<div class="dashboard-layout">
+<header class="nav">
+    <div class="logo">VoxFix AI</div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-
-<div class="logo-area">
-<div class="logo-circle">V</div>
-<h2>VoxFix AI</h2>
-</div>
-
-<nav class="sidebar-links">
-
-<a href="index.html">🏠 Dashboard</a>
-<a href="pricing.html">💎 Premium</a>
-<a href="history.html">🕘 History</a>
-<a href="languages.html">🌍 Languages</a>
-<a href="settings.html">⚙ Settings</a>
-
-<button onclick="logoutUser()">🚪 Logout</button>
-
-</nav>
-
-</aside>
-
-<!-- MAIN -->
-<main class="dashboard-main">
-
-<!-- TOP BAR -->
-<header class="topbar">
-
-<button class="menu-button" onclick="toggleSidebar()">☰</button>
-
-<div class="top-right">
-
-<div class="online-status">
-<div class="status-dot"></div>
-AI Active
-</div>
-
-<a href="pricing.html" class="upgrade-btn">Upgrade</a>
-
-</div>
-
+    <div class="nav-links">
+        <a href="/login.html">Login</a>
+        <a href="/signup.html" class="btn-primary">Start Free</a>
+    </div>
 </header>
 
-<!-- HERO -->
-<section class="hero-panel">
+<section class="hero">
 
-<div class="hero-chip">⚡ Premium AI Communication</div>
+    <h1>Turn messy messages into clear, professional communication</h1>
 
-<h1>
-Turn Rough Messages Into Powerful Communication
-</h1>
+    <p>
+        People lose opportunities because of unclear messages. VoxFix AI fixes that instantly.
+    </p>
 
-<p>
-VoxFix AI rewrites your messages into confident, intelligent, and emotionally refined communication that improves how people perceive you.
-</p>
+    <div class="cta-group">
+        <a href="/signup.html" class="btn-primary">Start Free in 10 Seconds</a>
+        <a href="/login.html" class="btn-secondary">I already have an account</a>
+    </div>
 
-<div class="hero-buttons">
-
-<a href="pricing.html" class="hero-primary">
-Unlock Premium
-</a>
-
-<a href="languages.html" class="hero-secondary">
-Explore Languages
-</a>
-
-</div>
+    <div class="trust-line">
+        No credit card required. Free tier available.
+    </div>
 
 </section>
 
-<!-- MAIN GRID -->
-<section class="dashboard-grid">
+<section class="features">
 
-<!-- AI INPUT -->
-<div class="ai-panel">
+    <div class="card">
+        <h3>Voice to Text</h3>
+        <p>Convert voice notes into structured messages instantly.</p>
+    </div>
 
-<h2>AI Workspace</h2>
+    <div class="card">
+        <h3>Message Polishing</h3>
+        <p>Make your messages sound professional and confident.</p>
+    </div>
 
-<textarea id="promptInput" placeholder="Type your message here..."></textarea>
+    <div class="card">
+        <h3>Smart Replies</h3>
+        <p>Generate responses that fit context and tone.</p>
+    </div>
 
-<div class="controls">
-
-<select id="toneSelect">
-<option>Professional</option>
-<option>Friendly</option>
-<option>Luxury 🔒</option>
-<option>CEO 🔒</option>
-<option>Dating 🔒</option>
-</select>
-
-<select id="languageSelect">
-<option>English</option>
-<option>French</option>
-<option>Spanish</option>
-<option>Arabic</option>
-<option>German</option>
-<option>Yoruba</option>
-<option>Igbo</option>
-<option>Hausa</option>
-</select>
-
-</div>
-
-<label class="upload-box">
-<input type="file" id="audioInput" hidden />
-🎤 Upload Voice Note
-</label>
-
-<button id="fixBtn" class="fix-button">
-✨ Generate Premium Rewrite
-</button>
-
-</div>
-
-<!-- RESULT -->
-<div class="result-panel">
-
-<h2>AI Result</h2>
-
-<div id="resultText" class="result-output">
-Your polished message will appear here...
-</div>
-
-<div class="result-actions">
-<button onclick="copyResult()">Copy</button>
-<button onclick="shareAIResult()">Share</button>
-</div>
-
-</div>
+    <div class="card highlight">
+        <h3>Premium Upgrade</h3>
+        <p>Remove limits when you're ready to scale your communication.</p>
+    </div>
 
 </section>
-
-</main>
-
-</div>
-
-<script type="module" src="./app.js"></script>
 
 </body>
 </html>
