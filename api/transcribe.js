@@ -1,275 +1,172 @@
+import admin from "firebase-admin";
+import OpenAI from "openai";
+import formidable from "formidable";
 import fs from "fs";
-import path from "path";
-import os from "os";
 
-/* ====================================
-   CONFIG
-==================================== */
 
 export const config = {
-
-  api:{
-    bodyParser:false
-  }
-
+    api: {
+        bodyParser: false
+    }
 };
 
-/* ====================================
-   PARSE MULTIPART
-==================================== */
 
-async function parseForm(req){
+/* =========================
+   FIREBASE ADMIN
+========================= */
 
-  const formidable =
-    (await import("formidable")).default;
+if (!admin.apps.length) {
 
-  const form =
-    formidable({
-
-      multiples:false,
-
-      uploadDir:
-        os.tmpdir(),
-
-      keepExtensions:true
-
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
+        })
     });
-
-  return new Promise((resolve,reject)=>{
-
-    form.parse(
-
-      req,
-
-      (err,fields,files)=>{
-
-        if(err){
-
-          reject(err);
-
-        }else{
-
-          resolve({
-            fields,
-            files
-          });
-
-        }
-
-      }
-
-    );
-
-  });
-
 }
 
-/* ====================================
-   TRANSCRIBE
-==================================== */
+const db = admin.firestore();
 
-export default async function handler(
-  req,
-  res
-){
 
-  if(req.method !== "POST"){
+/* =========================
+   OPENAI CLIENT
+========================= */
 
-    return res.status(405).json({
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
 
-      error:
-        "Method not allowed"
 
-    });
+/* =========================
+   MAIN HANDLER
+========================= */
 
-  }
+export default async function handler(req, res) {
 
-  try{
+    try {
 
-    /* ====================================
-       GET FILE
-    ==================================== */
-
-    const {
-
-      files
-
-    } = await parseForm(req);
-
-    const audio =
-      files.audio?.[0]
-      ||
-      files.audio;
-
-    if(!audio){
-
-      return res.status(400).json({
-
-        error:
-          "No audio uploaded"
-
-      });
-
-    }
-
-    /* ====================================
-       FILE VALIDATION
-    ==================================== */
-
-    const allowedTypes = [
-
-      "audio/mpeg",
-
-      "audio/mp3",
-
-      "audio/wav",
-
-      "audio/webm",
-
-      "audio/mp4",
-
-      "audio/x-m4a"
-
-    ];
-
-    if(
-      !allowedTypes.includes(
-        audio.mimetype
-      )
-    ){
-
-      return res.status(400).json({
-
-        error:
-          "Unsupported audio format"
-
-      });
-
-    }
-
-    /* ====================================
-       SIZE LIMIT
-    ==================================== */
-
-    const maxSize =
-      10 * 1024 * 1024;
-
-    if(audio.size > maxSize){
-
-      return res.status(400).json({
-
-        error:
-          "Audio exceeds 10MB"
-
-      });
-
-    }
-
-    /* ====================================
-       OPENAI FORM
-    ==================================== */
-
-    const formData =
-      new FormData();
-
-    const fileBuffer =
-      fs.readFileSync(
-        audio.filepath
-      );
-
-    const blob =
-      new Blob([fileBuffer]);
-
-    formData.append(
-
-      "file",
-
-      blob,
-
-      audio.originalFilename
-
-    );
-
-    formData.append(
-      "model",
-      "whisper-1"
-    );
-
-    formData.append(
-      "response_format",
-      "json"
-    );
-
-    /* ====================================
-       OPENAI REQUEST
-    ==================================== */
-
-    const response =
-      await fetch(
-
-        "https://api.openai.com/v1/audio/transcriptions",
-
-        {
-
-          method:"POST",
-
-          headers:{
-
-            Authorization:
-`Bearer ${process.env.OPENAI_API_KEY}`
-
-          },
-
-          body:formData
-
+        if (req.method !== "POST") {
+            return res.status(405).json({
+                error: "Method not allowed"
+            });
         }
 
-      );
 
-    const data =
-      await response.json();
+        /* =========================
+           FORM PARSE
+        ========================= */
 
-    console.log(data);
+        const form = formidable({
+            multiples: false,
+            keepExtensions: true
+        });
 
-    /* ====================================
-       ERROR
-    ==================================== */
 
-    if(data.error){
+        const data = await new Promise((resolve, reject) => {
 
-      return res.status(500).json({
+            form.parse(req, (err, fields, files) => {
 
-        error:
-          data.error.message
+                if (err) reject(err);
 
-      });
+                resolve({
+                    fields,
+                    files
+                });
+            });
+        });
 
+
+        const uid = data.fields.uid?.[0];
+
+        const file = data.files.file?.[0];
+
+
+        if (!uid || !file) {
+            return res.status(400).json({
+                error: "Missing audio or uid"
+            });
+        }
+
+
+        /* =========================
+           USER CHECK
+        ========================= */
+
+        const userRef = db.collection("users").doc(uid);
+
+        const snap = await userRef.get();
+
+        if (!snap.exists) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+
+        const user = snap.data();
+
+        const used = user?.usage?.transcription || 0;
+
+
+        if (
+            user.plan !== "pro" &&
+            used >= 1
+        ) {
+
+            return res.status(403).json({
+                error: "Monthly transcription limit reached",
+                upgrade: true
+            });
+        }
+
+
+        /* =========================
+           OPENAI WHISPER
+        ========================= */
+
+        const transcription =
+            await openai.audio.transcriptions.create({
+
+                file: fs.createReadStream(file.filepath),
+
+                model: "whisper-1"
+            });
+
+
+        /* =========================
+           UPDATE USAGE
+        ========================= */
+
+        await userRef.update({
+            "usage.transcription":
+                admin.firestore.FieldValue.increment(1)
+        });
+
+
+        /* =========================
+           ANALYTICS
+        ========================= */
+
+        await db.collection("analytics_events").add({
+            uid,
+            type: "transcription",
+            timestamp: Date.now(),
+            plan: user.plan
+        });
+
+
+        return res.json({
+            success: true,
+            transcription: transcription.text
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+            error: err.message
+        });
     }
-
-    /* ====================================
-       SUCCESS
-    ==================================== */
-
-    return res.status(200).json({
-
-      text:
-        data.text ||
-
-        "No transcription result"
-
-    });
-
-  }catch(error){
-
-    console.error(error);
-
-    return res.status(500).json({
-
-      error:
-        "Transcription failed"
-
-    });
-
-  }
-
 }
