@@ -125,7 +125,6 @@
 
 </div>
 
-
 <script type="module">
 
 import {
@@ -137,56 +136,68 @@ import {
 initAuthRedirects();
 
 
-const btn = document.getElementById("signupBtn");
-const status = document.getElementById("statusText");
+const btn =
+    document.getElementById("signupBtn");
+
+const status =
+    document.getElementById("statusText");
 
 
-btn.addEventListener("click", async () => {
+btn.onclick = async () => {
 
-    const name =
-        document.getElementById("name").value.trim();
+    try {
 
-    const email =
-        document.getElementById("email").value.trim();
+        const name =
+            document.getElementById("name").value.trim();
 
-    const password =
-        document.getElementById("password").value.trim();
+        const email =
+            document.getElementById("email").value.trim();
 
-    if(!name || !email || !password){
-        status.innerText = "Please complete all fields";
-        return;
-    }
+        const password =
+            document.getElementById("password").value.trim();
 
-    try{
+        if (!name || !email || !password) {
+
+            status.innerText =
+                "Complete all fields";
+
+            return;
+        }
+
+        btn.disabled = true;
 
         btn.innerHTML = `
             <div class="spinner"></div>
         `;
 
         status.innerText =
-            "Creating your account...";
+            "Creating account...";
 
-        await signup(email, password, name);
 
-        status.innerText =
-            "Account created successfully";
+        await signup(name, email, password);
 
-        setTimeout(() => {
-            window.location.href = "/dashboard.html";
-        }, 1400);
-
-    }catch(err){
-
-        btn.innerHTML = `Create Account`;
 
         status.innerText =
-            err.message || "Signup failed";
+            "Redirecting...";
 
+
+        /* FORCE REDIRECT */
+        window.location.replace("/dashboard.html");
+
+    } catch (err) {
+
+        console.error(err);
+
+        btn.disabled = false;
+
+        btn.innerHTML =
+            "Create Account";
+
+        status.innerText =
+            err.message;
     }
-
-});
+};
 
 </script>
-<div id="copyright">©voxfix 2026</div>
 </body>
 </html>

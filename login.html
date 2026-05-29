@@ -158,8 +158,6 @@
     </div>
 
 </div>
-
-
 <script type="module">
 
 import {
@@ -168,57 +166,66 @@ import {
 } from "/js/auth.js";
 
 
-/* INIT REDIRECT SYSTEM */
 initAuthRedirects();
 
 
-const btn = document.getElementById("loginBtn");
-const status = document.getElementById("statusText");
+const btn =
+    document.getElementById("loginBtn");
+
+const status =
+    document.getElementById("statusText");
 
 
-btn.addEventListener("click", async () => {
+btn.onclick = async () => {
 
-    const email = document.getElementById("email").value.trim();
+    try {
 
-    const password = document.getElementById("password").value.trim();
+        const email =
+            document.getElementById("email").value.trim();
 
-    if(!email || !password){
-        status.innerText = "Please complete all fields";
-        return;
-    }
+        const password =
+            document.getElementById("password").value.trim();
 
-    try{
+        if (!email || !password) {
 
-        /* LOADING STATE */
-        btn.classList.add("loading");
+            status.innerText =
+                "Complete all fields";
+
+            return;
+        }
+
+        btn.disabled = true;
 
         btn.innerHTML = `
             <div class="spinner"></div>
         `;
 
-        status.innerText = "Signing you in...";
+        status.innerText =
+            "Signing you in...";
+
 
         await login(email, password);
 
-        status.innerText = "Success. Redirecting...";
 
-        /* SMOOTH DELAY */
-        setTimeout(() => {
-            window.location.href = "/dashboard.html";
-        }, 1200);
+        status.innerText =
+            "Redirecting...";
 
-    }catch(err){
 
-        btn.classList.remove("loading");
+        /* FORCE REDIRECT */
+        window.location.replace("/dashboard.html");
+
+    } catch (err) {
+
+        console.error(err);
+
+        btn.disabled = false;
 
         btn.innerHTML = `Login`;
 
         status.innerText =
-            err.message || "Login failed";
-
+            err.message;
     }
-
-});
+};
 
 </script>
 
