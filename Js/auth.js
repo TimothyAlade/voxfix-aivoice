@@ -1,16 +1,13 @@
 import {
     auth,
-    db,
-    googleProvider
+    db
 } from "./firebase-core.js";
 
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    signOut,
     onAuthStateChanged,
-    updateProfile,
-    signInWithPopup
+    updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -21,41 +18,39 @@ import {
 
 
 /* =========================
-   CREATE USER PROFILE
+   SIGNUP
 ========================= */
 
-async function createUserProfile(user, name = "") {
+export async function signup(name, email, password) {
 
-    const ref = doc(db, "users", user.uid);
-
-    await setDoc(ref, {
-        uid: user.uid,
-        email: user.email,
-        name: name || user.displayName || "User",
-        plan: "free",
-        createdAt: Date.now(),
-        usage: {
-            transcription: 0,
-            polish: 0,
-            reply: 0
-        }
-    });
-}
-
-
-/* =========================
-   SIGN UP
-========================= */
-
-export async function signup(email, password, name) {
-
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const cred =
+        await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
 
     await updateProfile(cred.user, {
         displayName: name
     });
 
-    await createUserProfile(cred.user, name);
+    await setDoc(
+        doc(db, "users", cred.user.uid),
+        {
+            uid: cred.user.uid,
+            name,
+            email,
+            plan: "free",
+
+            usage: {
+                polish: 0,
+                reply: 0,
+                transcription: 0
+            },
+
+            createdAt: Date.now()
+        }
+    );
 
     return cred.user;
 }
@@ -67,46 +62,19 @@ export async function signup(email, password, name) {
 
 export async function login(email, password) {
 
-    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const cred =
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
 
     return cred.user;
 }
 
 
 /* =========================
-   GOOGLE LOGIN
-========================= */
-
-export async function googleLogin() {
-
-    const result = await signInWithPopup(auth, googleProvider);
-
-    const userRef = doc(db, "users", result.user.uid);
-    const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-        await createUserProfile(result.user);
-    }
-
-    return result.user;
-}
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-export async function logout() {
-
-    await signOut(auth);
-    localStorage.removeItem("voxfix_user");
-    window.location.href = "/login.html";
-}
-
-
-/* =========================
-   AUTH STATE CONTROLLER
-   (CRITICAL FOR SECURITY FLOW)
+   AUTH STATE
 ========================= */
 
 export function initAuthRedirects() {
@@ -115,26 +83,30 @@ export function initAuthRedirects() {
 
         if (!user) return;
 
-        const ref = doc(db, "users", user.uid);
-        const snap = await getDoc(ref);
+        try {
 
-        if (!snap.exists()) return;
+            const snap = await getDoc(
+                doc(db, "users", user.uid)
+            );
 
-        const data = snap.data();
+            if (!snap.exists()) return;
 
-        // NEVER trust only localStorage
-        localStorage.setItem("voxfix_user", JSON.stringify({
-            uid: user.uid,
-            email: user.email,
-            name: data.name,
-            plan: data.plan
-        }));
+            const data = snap.data();
 
-        // redirect logic
-        const path = window.location.pathname;
+            localStorage.setItem(
+                "voxfix_user",
+                JSON.stringify({
+                    uid: user.uid,
+                    name: data.name,
+                    email: data.email,
+                    plan: data.plan,
+                    usage: data.usage || {}
+                })
+            );
 
-        if (path.includes("login") || path.includes("signup")) {
-            window.location.href = "/dashboard.html";
+        } catch (err) {
+
+            console.error(err);
         }
     });
 }
